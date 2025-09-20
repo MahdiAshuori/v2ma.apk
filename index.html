@@ -7,7 +7,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" defer></script>
 
+    <!-- ====== Extracted & Renamed CSS (keeps original look) ====== -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         * { font-family: 'Inter', sans-serif; }
@@ -15,23 +17,30 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             min-height: 100vh;
         }
-        .glass-effect {
+
+        /* glass-effect  -> .g */
+        .g {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(148, 163, 184, 0.2);
         }
-        .config-card {
+
+        /* config-card -> .cc */
+        .cc {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             border: 1px solid rgba(148, 163, 184, 0.3);
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
-        .config-card:hover {
-            transform: translateY(-4px);
+        .cc:hover {
+            transform: translateY(-2px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             border-color: rgba(59, 130, 246, 0.5);
         }
-        .status-indicator {
+
+        /* status-indicator -> .si */
+        .si {
             width: 12px;
             height: 12px;
             border-radius: 50%;
@@ -42,32 +51,113 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
         }
-        .tab-active {
+
+        /* tab-active -> .ta */
+        .ta {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-        .speed-meter {
+
+        /* speed-meter -> .sm */
+        .sm {
             background: conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e);
             box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
         }
-        .ping-excellent { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
-        .ping-good { color: #eab308; text-shadow: 0 0 10px #eab308; }
-        .ping-fair { color: #f97316; text-shadow: 0 0 10px #f97316; }
-        .ping-poor { color: #ef4444; text-shadow: 0 0 10px #ef4444; }
-        .ping-testing { animation: blink 1s infinite; color: #06b6d4 !important; }
+
+        /* ping classes -> .p-ex, .p-good, .p-fair, .p-poor, .p-timeout, .p-testing */
+        .p-ex { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
+        .p-good { color: #eab308; text-shadow: 0 0 10px #eab308; }
+        .p-fair { color: #f97316; text-shadow: 0 0 10px #f97316; }
+        .p-poor { color: #ef4444; text-shadow: 0 0 10px #ef4444; }
+        .p-timeout { color: #94a3b8; }
+        .p-testing { animation: blink 1s infinite; color: #06b6d4 !important; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-        .neon-button { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); transition: all 0.3s ease; }
-        .neon-button:hover { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); transform: translateY(-2px); }
-        .header-gradient {
+
+        /* neon-button -> .nb */
+        .nb { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); transition: all 0.3s ease; }
+        .nb:hover { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); transform: translateY(-2px); }
+
+        /* header-gradient -> .hg */
+        .hg {
             background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
             border-bottom: 1px solid rgba(148, 163, 184, 0.2);
         }
+
+        /* menu-panel -> .mp, menu-item -> .mi */
+        .mp {
+            position: absolute;
+            min-width: 180px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid rgba(148,163,184,.2);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.4);
+            z-index: 1000;
+        }
+        .mi {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: #e2e8f0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .mi:hover { background: rgba(148,163,184,.1); }
+
+        /* Selection bar (keeps id #selectionBar) */
+        #selectionBar { display: none; position: sticky; top: 0; z-index: 40; padding: 8px; margin-bottom: 12px; }
+
+        /* card-actions -> .ca, card-menu-btn -> .cmb, top-actions -> .tacts, bulk-menu-btn -> .bmb */
+        .ca { display: flex; gap: 8px; align-items: center; }
+        .cmb { display: none; }
+        .tacts { display: flex; }
+        .bmb { display: none; }
+
+        @media (max-width: 700px) {
+            .ca { display: none !important; }
+            .cmb { display: inline-flex !important; }
+            .tacts { display: none !important; }
+            .bmb { display: inline-flex !important; }
+        }
+
+        /* icon-btn -> .ib */
+        .ib {
+            background: rgba(148,163,184,.12);
+            border: 1px solid rgba(148,163,184,.2);
+            color: #e2e8f0;
+            padding: 8px 10px;
+            border-radius: 10px;
+            transition: .2s;
+        }
+        .ib:hover { background: rgba(148,163,184,.2); }
+
+        /* titlebox -> .tbx, apktitle -> .apt */
+        .tbx {
+            justify-items: center;
+            align-content: center;
+            text-align: center;
+            background: linear-gradient(120deg,rgb(61, 128, 244), rgb(137, 92, 244));
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+        }
+        .apt {
+            direction: rtl;
+            text-align: center;
+            color: rgb(255, 255, 255);
+            font-size: 30px;
+            text-shadow: 0px 3px 5px rgb(0, 0, 0);
+        }
+
+        /* action menu small tweaks (matching original) */
+        .menu-panel .mi + .mi { margin-top: 4px; }
     </style>
 </head>
 <body class="min-h-screen text-white">
 <!-- Header -->
-<div class="header-gradient p-6 shadow-2xl">
+<div class="hg p-6 shadow-2xl">
     <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4 space-x-reverse">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -76,30 +166,36 @@
                 </svg>
             </div>
             <div>
+                <div class="tbx">
+                    <h1 class="apt"><b>V2MA.apk</b></h1>
+                </div>
                 <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">V2Ray Manager Pro</h1>
                 <p class="text-sm text-slate-400">مدیریت پیشرفته کانفیگ‌ها با تکنولوژی هوشمند</p>
             </div>
         </div>
-        <div class="flex items-center space-x-3 space-x-reverse">
-            <div class="status-indicator bg-green-400" id="connectionStatus"></div>
-            <span class="text-sm font-medium" id="statusText">آماده اتصال</span>
+        <div class="flex items-center gap-2">
+            <button id="goToolsBtn" class="ib" title="ابزارها">🧰</button>
+            <button id="goSettingsBtn" class="ib" title="تنظیمات">⚙️</button>
+            <div class="flex items-center space-x-3 space-x-reverse ml-3">
+                <div class="si bg-slate-500" id="connectionStatus"></div>
+                <span class="text-sm font-medium" id="statusText">آماده اتصال</span>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Connection Panel -->
 <div class="p-6">
-    <div class="glass-effect rounded-2xl p-8 mb-8 shadow-2xl">
+    <div class="g rounded-2xl p-8 mb-8 shadow-2xl">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold text-slate-200">وضعیت اتصال</h2>
-            <button id="connectBtn" class="neon-button bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300">
-                اتصال
+            <button id="connectBtn" class="nb bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300">
+                اتصال سریع
             </button>
         </div>
-
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div class="text-center">
-                <div class="speed-meter w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center">
+                <div class="sm w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center">
                     <span class="text-white font-bold text-lg" id="pingValue">--</span>
                 </div>
                 <p class="text-sm text-slate-400 font-medium">پینگ</p>
@@ -126,9 +222,9 @@
     </div>
 
     <!-- Tabs -->
-    <div class="glass-effect rounded-2xl shadow-2xl mb-8">
+    <div class="g rounded-2xl shadow-2xl mb-8">
         <div class="flex border-b border-slate-700">
-            <button class="tab-btn tab-active flex-1 py-4 px-6 text-center font-bold rounded-tl-2xl transition-all duration-300" data-tab="configs">کانفیگ‌ها</button>
+            <button class="tab-btn ta flex-1 py-4 px-6 text-center font-bold rounded-tl-2xl transition-all duration-300" data-tab="configs">کانفیگ‌ها</button>
             <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-slate-400 hover:text-white transition-all duration-300" data-tab="settings">تنظیمات</button>
             <button class="tab-btn flex-1 py-4 px-6 text-center font-bold text-slate-400 hover:text-white rounded-tr-2xl transition-all duration-300" data-tab="tools">ابزارها</button>
         </div>
@@ -137,43 +233,26 @@
         <div id="configs" class="tab-content p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-200">کانفیگ‌های من</h3>
-                <div class="flex flex-wrap gap-3">
-                    <button id="pingAllBtn" class="neon-button bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
+
+                <!-- Bulk menu button (mobile) -->
+                <button id="bulkMenuBtn" class="bmb nb bg-gradient-to-r from-slate-600 to-slate-700 text-white px-4 py-2 rounded-xl font-bold text-sm">
+                    ☰ عملیات
+                </button>
+
+                <!-- Top actions (desktop) -->
+                <div class="tacts flex flex-wrap gap-3">
+                    <button id="pingAllBtn" class="nb bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                         <span>تست پینگ همه</span>
                     </button>
-
-                    <button id="cleanupBtn" class="neon-button bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        <span>حذف غیرفعال‌ها</span>
-                    </button>
-
-                    <button id="shareAllBtn" class="neon-button bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-                        <span>اشتراک همه</span>
-                    </button>
-
-                    <button id="shareActiveBtn" class="neon-button bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-                        <span>اشتراک فعال‌ها</span>
-                    </button>
-
-                    <button id="clipboardBtn" class="neon-button bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 flex items-center space-x-2 space-x-reverse">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/></svg>
-                        <span>از کلیپ‌بورد</span>
-                    </button>
-
-                    <button id="selectModeBtn" class="neon-button bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">
-                        انتخاب
-                    </button>
-
-                    <button id="deleteAllBtn" class="neon-button bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">
-                        حذف همه
-                    </button>
-
-                    <button id="addConfigBtn" class="neon-button bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">
-                        + افزودن کانفیگ
-                    </button>
+                    <button id="cleanupBtn" class="nb bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">حذف غیرفعال‌ها</button>
+                    <button id="shareAllBtn" class="nb bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">اشتراک همه</button>
+                    <button id="shareActiveBtn" class="nb bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">اشتراک فعال‌ها</button>
+                    <button id="clipboardBtn" class="nb bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300">از کلیپ‌بورد</button>
+                    <button id="selectModeBtn" class="nb bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white px-4 py-2 rounded-xl font-bold text-sm">انتخاب</button>
+                    <button id="deleteAllBtn" class="nb bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white px-4 py-2 rounded-xl font-bold text-sm">حذف همه</button>
+                    <button id="addConfigBtn" class="nb bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-4 py-2 rounded-xl font-bold text-sm">+ افزودن کانفیگ</button>
+                    <button id="createFolderBtn" class="nb bg-gradient-to-r from-slate-600 to-slate-700 text-white px-3 py-2 rounded-xl text-sm">+ پوشه جدید</button>
                 </div>
             </div>
 
@@ -181,20 +260,17 @@
             <div id="folderBar" class="mb-4 flex flex-wrap items-center gap-2">
                 <button id="allFolderChip" class="px-3 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm">همه</button>
                 <div id="folderChips" class="flex flex-wrap gap-2"></div>
-                <button id="createFolderBtn" class="ml-auto neon-button bg-gradient-to-r from-slate-600 to-slate-700 text-white px-3 py-1 rounded-lg text-sm">
-                    + پوشه جدید
-                </button>
             </div>
 
             <!-- Selection bar -->
-            <div id="selectionBar" class="hidden glass-effect rounded-xl p-3 mb-4">
+            <div id="selectionBar" class="g rounded-xl p-3 mb-4">
                 <div class="flex items-center justify-between">
                     <span id="selectionCount" class="text-sm text-slate-300">0 مورد انتخاب شده</span>
                     <div class="flex gap-2">
-                        <button id="moveToFolderBtn" class="neon-button bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1 rounded-lg text-sm">انتقال به پوشه</button>
-                        <button id="shareSelectedBtn" class="neon-button bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-lg text-sm">اشتراک</button>
-                        <button id="pingSelectedBtn" class="neon-button bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-lg text-sm">پینگ</button>
-                        <button id="deleteSelectedBtn" class="neon-button bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-lg text-sm">حذف</button>
+                        <button id="moveToFolderBtn" class="nb bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-3 py-1 rounded-lg text-sm">انتقال به پوشه</button>
+                        <button id="shareSelectedBtn" class="nb bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-lg text-sm">اشتراک</button>
+                        <button id="pingSelectedBtn" class="nb bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-lg text-sm">پینگ</button>
+                        <button id="deleteSelectedBtn" class="nb bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-lg text-sm">حذف</button>
                     </div>
                 </div>
             </div>
@@ -208,21 +284,21 @@
                 <div>
                     <h3 class="text-xl font-bold text-slate-200 mb-6">تنظیمات عمومی</h3>
                     <div class="space-y-6">
-                        <div class="flex items-center justify-between p-4 glass-effect rounded-xl">
+                        <div class="flex items-center justify-between p-4 g rounded-xl">
                             <span class="text-slate-300 font-medium">اتصال خودکار</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="autoConnectToggle" class="sr-only peer">
-                                <div class="w-14 h-7 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500"></div>
+                                <div class="w-14 h-7 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500"></div>
                             </label>
                         </div>
-                        <div class="flex items-center justify-between p-4 glass-effect rounded-xl">
+                        <div class="flex items-center justify-between p-4 g rounded-xl">
                             <span class="text-slate-300 font-medium">حالت تاریک</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" checked>
-                                <div class="w-14 h-7 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500"></div>
+                                <div class="w-14 h-7 bg-slate-600 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500"></div>
                             </label>
                         </div>
-                        <div class="p-4 glass-effect rounded-xl">
+                        <div class="p-4 g rounded-xl">
                             <label class="block text-slate-300 font-medium mb-3">پروتکل پیش‌فرض</label>
                             <select id="defaultProto" class="w-full p-4 bg-slate-700 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white">
                                 <option>VMess</option>
@@ -230,6 +306,17 @@
                                 <option>Trojan</option>
                                 <option>Shadowsocks</option>
                             </select>
+                        </div>
+                        <div class="p-4 g rounded-xl">
+                            <h4 class="font-bold mb-2">ورود سریع</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button id="settingsImportClipboard" class="ib">از کلیپ‌بورد</button>
+                                <button id="settingsExport" class="ib">خروجی (JSON)</button>
+                                <label class="ib cursor-pointer">
+                                    ورودی (JSON)
+                                    <input type="file" id="settingsImportFile" accept="application/json" class="hidden">
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -242,7 +329,7 @@
                 <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-xl shadow-lg">
                     <h4 class="font-bold text-white text-lg mb-2">تست سرعت</h4>
                     <p class="text-sm text-blue-100 mb-4">بررسی سرعت اتصال شما</p>
-                    <button id="speedTestBtn" class="neon-button bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
+                    <button id="speedTestBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
                         شروع تست
                     </button>
                 </div>
@@ -250,7 +337,7 @@
                 <div class="bg-gradient-to-br from-green-600 to-green-700 p-6 rounded-xl shadow-lg">
                     <h4 class="font-bold text-white text-lg mb-2">پینگ تست</h4>
                     <p class="text-sm text-green-100 mb-4">بررسی تأخیر شبکه (همزمان)</p>
-                    <button id="pingTestToolBtn" class="neon-button bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
+                    <button id="pingTestToolBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
                         شروع پینگ
                     </button>
                 </div>
@@ -258,21 +345,20 @@
                 <div class="bg-gradient-to-br from-purple-600 to-purple-700 p-6 rounded-xl shadow-lg">
                     <h4 class="font-bold text-white text-lg mb-2">اسکن QR</h4>
                     <p class="text-sm text-purple-100 mb-4">اضافه کردن کانفیگ با QR کد</p>
-                    <button id="scanQrBtn" class="neon-button bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
-                        اسکن کردن
-                    </button>
+                    <div class="space-y-2">
+                        <input id="qrFileInputTools" type="file" accept="image/*" class="w-full p-2 bg-slate-800 rounded text-sm" />
+                        <button id="scanQrBtnTools" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 w-full">
+                            اسکن کردن با دوربین
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-gradient-to-br from-orange-600 to-orange-700 p-6 rounded-xl shadow-lg">
                     <h4 class="font-bold text-white text-lg mb-2">پشتیبان‌گیری</h4>
                     <p class="text-sm text-orange-100 mb-4">ذخیره و بازیابی کانفیگ‌ها و پوشه‌ها</p>
                     <div class="grid grid-cols-2 gap-3">
-                        <button id="backupBtn" class="neon-button bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">
-                            پشتیبان‌گیری
-                        </button>
-                        <button id="restoreBtn" class="neon-button bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">
-                            بازیابی
-                        </button>
+                        <button id="backupBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">پشتیبان‌گیری</button>
+                        <button id="restoreBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">بازیابی</button>
                         <input type="file" id="backupInput" accept="application/json" class="hidden" />
                     </div>
                 </div>
@@ -283,7 +369,7 @@
 
 <!-- Add Config Modal -->
 <div id="addConfigModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 backdrop-blur-sm">
-    <div class="glass-effect rounded-2xl p-8 m-4 w-full max-w-md shadow-2xl">
+    <div class="g rounded-2xl p-8 m-4 w-full max-w-md shadow-2xl">
         <h3 class="text-xl font-bold text-slate-200 mb-6">افزودن کانفیگ جدید</h3>
         <div class="space-y-6">
             <div>
@@ -292,7 +378,7 @@
                 <p class="text-xs text-slate-400 mt-2">نام به‌صورت خودکار از لینک استخراج می‌شود</p>
             </div>
             <div class="flex space-x-4 space-x-reverse">
-                <button id="saveConfigBtn" class="flex-1 neon-button bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300">
+                <button id="saveConfigBtn" class="flex-1 nb bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300">
                     ذخیره
                 </button>
                 <button id="cancelConfigBtn" class="flex-1 bg-slate-600 hover:bg-slate-700 text-slate-300 py-3 px-6 rounded-xl font-bold transition-all duration-300">
@@ -305,7 +391,7 @@
 
 <!-- QR Modal -->
 <div id="qrModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 backdrop-blur-sm">
-    <div class="glass-effect rounded-2xl p-6 m-4 w-full max-w-lg shadow-2xl">
+    <div class="g rounded-2xl p-6 m-4 w-full max-w-lg shadow-2xl">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-slate-100">اسکن QR کانفیگ</h3>
             <button id="closeQrBtn" class="text-slate-300 hover:text-white">بستن ✕</button>
@@ -319,888 +405,581 @@
 <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
 
 <script>
-    // ------------------ State ------------------
+    // ====== State & Storage Keys ======
     let configs = [];
-    let isConnected = false;
-    let currentConfig = null;
-    let isPingTesting = false;
-
-    // Folders & selection
-    let folders = []; // { id, name }
-    let currentFolderId = null; // null = All
+    let folders = [];
+    let currentFolderId = null;
     let selectMode = false;
     let selectedIds = new Set();
+    let isPingTesting = false;
+
+    // connection state
+    let isConnected = false;
+    let currentConfig = null;
+
+    let qrInstance = null;
+    let openMenuEl = null;
 
     const LS_KEY = 'v2m.configs';
-    const LS_STATE = 'v2m.state';
-    const LS_PREFS = 'v2m.prefs';
     const LS_FOLDERS = 'v2m.folders';
     const LS_VIEW = 'v2m.view';
+    const LS_STATE = 'v2m.state';
 
-    // ------------------ Init ------------------
+    // ====== Init ======
     document.addEventListener('DOMContentLoaded', init);
 
     function init() {
-        loadState();
-        renderFolderBar();
-        renderConfigs();
+        loadAll();
+        renderAll();
         setupEventListeners();
         updateConnectionStatus();
         startSpeedSimulation();
-        restorePrefs();
+        showToast('روی موبایل، اکشن‌ها داخل منوی همبرگری هستند ✨', 'info');
     }
 
-    // ------------------ Persistence ------------------
+    // ====== Storage ======
+    function loadAll() {
+        try {
+            const c = JSON.parse(localStorage.getItem(LS_KEY) || '[]'); configs = Array.isArray(c)?c:[];
+            const f = JSON.parse(localStorage.getItem(LS_FOLDERS) || '[]'); folders = Array.isArray(f)?f:[];
+            const v = JSON.parse(localStorage.getItem(LS_VIEW) || '{}'); currentFolderId = v.currentFolderId ?? null;
+            const st = JSON.parse(localStorage.getItem(LS_STATE) || '{}');
+            if (st && st.currentConfigId) currentConfig = configs.find(x=>x.id===st.currentConfigId) || null;
+            isConnected = !!(st && st.isConnected && currentConfig);
+        } catch(e) {}
+    }
     function saveAll() {
         localStorage.setItem(LS_KEY, JSON.stringify(configs));
-        localStorage.setItem(LS_STATE, JSON.stringify({
-            isConnected,
-            currentConfigId: currentConfig ? currentConfig.id : null
-        }));
         localStorage.setItem(LS_FOLDERS, JSON.stringify(folders));
         localStorage.setItem(LS_VIEW, JSON.stringify({ currentFolderId }));
+        localStorage.setItem(LS_STATE, JSON.stringify({ isConnected, currentConfigId: currentConfig? currentConfig.id : null }));
     }
 
-    function loadState() {
-        try {
-            const data = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-            if (Array.isArray(data)) configs = data;
-            const st = JSON.parse(localStorage.getItem(LS_STATE) || '{}');
-            if (st && st.currentConfigId) {
-                currentConfig = configs.find(c => c.id === st.currentConfigId) || null;
-                isConnected = !!(st.isConnected && currentConfig);
-            }
-            folders = JSON.parse(localStorage.getItem(LS_FOLDERS) || '[]');
-            const view = JSON.parse(localStorage.getItem(LS_VIEW) || '{}');
-            currentFolderId = view.currentFolderId ?? null;
-        } catch (e) {}
+    // ====== Tabs ======
+    function setupTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn=>{
+            btn.addEventListener('click', ()=> switchTab(btn.dataset.tab));
+        });
+    }
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b=>{
+            b.classList.remove('ta'); b.classList.add('text-slate-400');
+        });
+        const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+        if (btn) { btn.classList.add('ta'); btn.classList.remove('text-slate-400'); }
+        document.querySelectorAll('.tab-content').forEach(c=> c.classList.add('hidden'));
+        const el = document.getElementById(tab); if (el) el.classList.remove('hidden');
+        closeAnyMenu();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function savePrefs() {
-        const auto = document.getElementById('autoConnectToggle')?.checked || false;
-        const proto = document.getElementById('defaultProto')?.value || 'VMess';
-        localStorage.setItem(LS_PREFS, JSON.stringify({ auto, proto }));
-    }
-
-    function restorePrefs() {
-        try {
-            const prefs = JSON.parse(localStorage.getItem(LS_PREFS) || '{}');
-            if (prefs.auto !== undefined) {
-                const el = document.getElementById('autoConnectToggle');
-                if (el) el.checked = !!prefs.auto;
-            }
-            if (prefs.proto) {
-                const el2 = document.getElementById('defaultProto');
-                if (el2) el2.value = prefs.proto;
-            }
-            if (prefs.auto && configs.length > 0 && !isConnected) {
-                toggleConnection(configs[0].id);
-            }
-        } catch {}
-    }
-
-    // ------------------ UI Helpers ------------------
-    function showToast(msg, type = 'info') {
+    // ====== Toast ======
+    function showToast(msg, type='info') {
         const c = document.getElementById('toastContainer');
-        const bg = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-slate-700';
         const el = document.createElement('div');
-        el.className = `${bg} text-white px-4 py-3 rounded-xl shadow-lg`;
+        el.className = (type==='success') ? 'bg-emerald-600 text-white px-4 py-2 rounded-md shadow-lg' : (type==='error') ? 'bg-red-600 text-white px-4 py-2 rounded-md shadow-lg' : 'bg-slate-700 text-white px-4 py-2 rounded-md shadow-lg';
+        el.style.marginTop='8px';
         el.textContent = msg;
         c.appendChild(el);
-        setTimeout(() => {
-            el.classList.add('opacity-0');
-            setTimeout(() => el.remove(), 300);
-        }, 2500);
+        setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 2400);
     }
 
-    // Sort configs (pinned first, then ping, timeout last)
-    function sortConfigsByPing(list = configs) {
-        list.sort((a, b) => {
-            const apin = a.pinned ? 0 : 1;
-            const bpin = b.pinned ? 0 : 1;
-            if (apin !== bpin) return apin - bpin;
-            const ap = a.ping === 'timeout' || a.ping === undefined ? Infinity : a.ping;
-            const bp = b.ping === 'timeout' || b.ping === undefined ? Infinity : b.ping;
+    // ====== Utils ======
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+    function getScopedConfigs() { return currentFolderId ? configs.filter(c=>c.folderId===currentFolderId) : configs.slice(); }
+    function getSelectedOrScopeConfigs() { if (selectedIds.size>0) return configs.filter(c=>selectedIds.has(c.id)); return getScopedConfigs(); }
+
+    // ====== Parse Config ======
+    function parseConfigFromUrl(url) {
+        try {
+            if (!url) return {name:'بدون نام', type:'Unknown', host:'', port: undefined};
+            if (url.startsWith('vmess://')) {
+                const b64 = url.slice(8);
+                let decoded=''; try{ decoded = atob(b64.replace(/_/g,'/').replace(/-/g,'+')); }catch(e){ decoded = b64; }
+                try { const j = JSON.parse(decoded); return { name: j.ps || j.add || 'VMess', type:'VMess', host:j.add||'', port: j.port?parseInt(j.port):undefined }; } catch(e){ return {name:'VMess', type:'VMess', host:'', port:undefined}; }
+            } else if (url.startsWith('vless://') || url.startsWith('trojan://')) {
+                const m = url.match(/^[a-z]+:\/\/(?:[^@]+@)?([^:/?#]+)(?::([0-9]+))?/i);
+                const nameMatch = url.match(/#(.+)$/);
+                return { name: nameMatch ? decodeURIComponent(nameMatch[1]) : (url.startsWith('vless')? 'VLESS' : 'Trojan'), type: url.startsWith('vless')? 'VLESS' : 'Trojan', host: m?m[1]:'', port: m&&m[2]?parseInt(m[2]):undefined };
+            } else if (url.startsWith('ss://')) {
+                const nameMatch = url.match(/#(.+)$/);
+                let name = nameMatch ? decodeURIComponent(nameMatch[1]) : 'Shadowsocks';
+                const raw = url.slice(5).split('#')[0];
+                if (raw.includes('@')) { const parts=raw.split('@'); const right=parts[1]; const hp=right.split(':'); return {name, type:'Shadowsocks', host:hp[0], port:parseInt(hp[1])}; }
+                try { const dec = atob(raw); const m = dec.match(/@?([^:]+):([0-9]{2,5})/); if (m) return {name,type:'Shadowsocks', host:m[1], port:parseInt(m[2])}; } catch(e){}
+                return {name, type:'Shadowsocks', host:'', port:undefined};
+            }
+            return {name:'کانفیگ', type:'Unknown', host:'', port:undefined};
+        } catch(e) { return {name:'کانفیگ', type:'Unknown', host:'', port:undefined}; }
+    }
+
+    function addConfigFromUrl(url, folderId=null) {
+        if (!url) return false;
+        if (!/^(vmess|vless|trojan|ss):\/\//.test(url)) return false;
+        if (configs.some(c=>c.url===url)) return false;
+        const p = parseConfigFromUrl(url);
+        const cfg = {
+            id: Date.now()+Math.random(), url,
+            name:p.name, type:p.type, host:p.host||'', port:p.port,
+            folderId: folderId||null, ping: undefined, status:'disconnected',
+            pinned:false, pastPings:[]
+        };
+        configs.push(cfg);
+        saveAll(); renderAll();
+        return true;
+    }
+
+    // ====== Sorting & Ping color ======
+    function sortConfigsByPing(list=configs) {
+        list.sort((a,b)=> {
+            const apin = a.pinned?0:1, bpin = b.pinned?0:1;
+            if (apin!==bpin) return apin-bpin;
+            const ap = (a.ping===undefined || a.ping==='timeout')?Infinity:a.ping;
+            const bp = (b.ping===undefined || b.ping==='timeout')?Infinity:b.ping;
             return ap - bp;
         });
     }
-
     function getPingColorClass(ping) {
-        if (ping === 'timeout') return 'text-red-500';
-        if (ping <= 50) return 'ping-excellent';
-        if (ping <= 100) return 'ping-good';
-        if (ping <= 200) return 'ping-fair';
-        return 'ping-poor';
+        if (!ping || ping==='timeout') return 'p-timeout';
+        const v = Number(ping);
+        if (isNaN(v)) return 'p-timeout';
+        if (v < 100) return 'p-ex';
+        if (v < 200) return 'p-good';
+        return 'p-poor';
     }
 
-    // ------------------ Folders & Selection ------------------
+    // ====== Render Folders ======
     function renderFolderBar() {
-        const chips = document.getElementById('folderChips');
+        const chips = document.getElementById('folderChips'); chips.innerHTML='';
         const allBtn = document.getElementById('allFolderChip');
-        chips.innerHTML = '';
         if (allBtn) {
-            allBtn.classList.toggle('tab-active', currentFolderId === null);
-            allBtn.classList.toggle('bg-slate-700', currentFolderId !== null);
-            allBtn.onclick = () => {
-                currentFolderId = null;
-                selectedIds.clear();
-                toggleSelectMode(false);
-                saveAll();
-                renderConfigs();
-                renderFolderBar();
-                showToast('نمایش همه کانفیگ‌ها');
-            };
+            allBtn.classList.toggle('ta', currentFolderId===null);
+            allBtn.onclick = ()=>{ currentFolderId=null; selectedIds.clear(); toggleSelectMode(false); saveAll(); renderAll(); showToast('نمایش همه'); };
         }
-        folders.forEach(f => {
-            const btn = document.createElement('div');
-            btn.className = `flex items-center gap-2 px-3 py-1 rounded-lg text-sm cursor-pointer ${
-                currentFolderId===f.id ? 'tab-active' : 'bg-slate-700 hover:bg-slate-600'
-            }`;
-            btn.innerHTML = `
-          <span>📂 ${f.name}</span>
-          <button class="text-red-400 hover:text-red-300" title="حذف پوشه" data-fid="${f.id}">🗑</button>
-        `;
-            btn.addEventListener('click', (e) => {
-                if (e.target.dataset.fid) return; // trash handled below
-                currentFolderId = f.id;
-                selectedIds.clear();
-                toggleSelectMode(false);
-                saveAll(); renderConfigs(); renderFolderBar();
-                showToast(`داخل پوشه: ${f.name}`);
-            });
-            chips.appendChild(btn);
+        folders.forEach(f=>{
+            const el = document.createElement('div');
+            el.className = currentFolderId===f.id ? 'px-3 py-1 rounded bg-emerald-600 font-bold flex items-center gap-2' : 'px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 flex items-center gap-2';
+            el.innerHTML = `<span>📂 ${escapeHtml(f.name)}</span><button data-fid="${f.id}" title="حذف پوشه" class="text-red-400">🗑</button>`;
+            el.addEventListener('click',(e)=>{ if (e.target.dataset && e.target.dataset.fid) return; currentFolderId = f.id; selectedIds.clear(); toggleSelectMode(false); saveAll(); renderAll(); showToast('داخل پوشه: '+f.name,'success'); });
+            chips.appendChild(el);
         });
-
-        // delete folder handler
-        document.querySelectorAll('#folderChips [data-fid]').forEach(x=>{
-            x.addEventListener('click', (e)=>{
+        chips.querySelectorAll('button[data-fid]').forEach(btn=>{
+            btn.addEventListener('click',(e)=>{
                 e.stopPropagation();
-                const fid = parseFloat(e.target.dataset.fid);
-                const folder = folders.find(ff=>ff.id===fid);
-                if (!folder) return;
-                const count = configs.filter(c=>c.folderId===folder.id).length;
-                if (confirm(`حذف پوشه "${folder.name}" و ${count} کانفیگ داخل آن؟`)) {
-                    const rmIds = new Set(configs.filter(c=>c.folderId===folder.id).map(c=>c.id));
-                    configs = configs.filter(c=>c.folderId !== folder.id);
-                    if (currentConfig && rmIds.has(currentConfig.id)) {
-                        currentConfig = null; isConnected=false; updateConnectionStatus();
-                    }
-                    folders = folders.filter(ff=>ff.id!==folder.id);
-                    if (currentFolderId === folder.id) currentFolderId = null;
-                    renderConfigs(); renderFolderBar(); saveAll();
-                    showToast('پوشه و کانفیگ‌هایش حذف شد','success');
-                }
+                const fid=parseFloat(e.target.dataset.fid);
+                const folder = folders.find(ff=>ff.id===fid); if(!folder) return;
+                const count=configs.filter(c=>c.folderId===folder.id).length;
+                if(!confirm(`حذف پوشه "${folder.name}" و ${count} کانفیگ داخل آن؟`)) return;
+                const rm=new Set(configs.filter(c=>c.folderId===folder.id).map(c=>c.id));
+                configs = configs.filter(c=>!rm.has(c.id));
+                if (currentConfig && rm.has(currentConfig.id)) { currentConfig=null; isConnected=false; updateConnectionStatus(); }
+                folders = folders.filter(ff=>ff.id!==folder.id);
+                if(currentFolderId===folder.id) currentFolderId=null;
+                saveAll(); renderAll(); showToast('پوشه حذف شد','success');
             });
         });
     }
 
-    function createFolder() {
-        const name = prompt('نام پوشه را وارد کنید:');
-        if (!name) return;
-        folders.push({ id: Date.now()+Math.random(), name: name.trim() });
-        saveAll(); renderFolderBar();
-        showToast('پوشه ساخته شد','success');
-    }
-
-    function toggleSelectMode(force) {
-        const btn = document.getElementById('selectModeBtn');
-        selectMode = (force !== undefined) ? force : !selectMode;
-        if (!selectMode) selectedIds.clear();
-        updateSelectionBar();
-        renderConfigs();
-        if (btn) btn.textContent = selectMode ? 'پایان انتخاب' : 'انتخاب';
-    }
-
-    function updateSelectionBar() {
-        const bar = document.getElementById('selectionBar');
-        const cnt = document.getElementById('selectionCount');
-        const n = selectedIds.size;
-        if (selectMode) {
-            bar.classList.remove('hidden');
-            cnt.textContent = `${n} مورد انتخاب شده`;
-        } else {
-            bar.classList.add('hidden');
-        }
-    }
-
-    function getScopedConfigs() {
-        return currentFolderId ? configs.filter(c=>c.folderId===currentFolderId) : configs.slice();
-    }
-    function getSelectedOrScopeConfigs() {
-        if (selectedIds.size > 0) return configs.filter(c=>selectedIds.has(c.id));
-        return getScopedConfigs();
-    }
-
-    function moveSelectedToFolder() {
-        if (selectedIds.size===0) return;
-        if (folders.length===0) return showToast('ابتدا پوشه بسازید','info');
-        const names = folders.map((f,i)=>`${i+1}) ${f.name}`).join('\n');
-        const ans = prompt(`انتقال به کدام پوشه؟ شماره را وارد کنید:\n${names}`);
-        const idx = parseInt(ans,10)-1;
-        if (isNaN(idx) || idx<0 || idx>=folders.length) return;
-        const fid = folders[idx].id;
-        configs.forEach(c=>{ if (selectedIds.has(c.id)) c.folderId = fid; });
-        selectedIds.clear(); toggleSelectMode(false);
-        renderConfigs(); saveAll(); renderFolderBar();
-        showToast('منتقل شد','success');
-    }
-
-    function deleteSelected() {
-        if (selectedIds.size===0) return;
-        if (!confirm(`حذف ${selectedIds.size} کانفیگ انتخاب‌شده؟`)) return;
-        const removedIds = new Set(selectedIds);
-        configs = configs.filter(c=>!removedIds.has(c.id));
-        if (currentConfig && removedIds.has(currentConfig.id)) {
-            currentConfig = null; isConnected = false; updateConnectionStatus();
-        }
-        selectedIds.clear(); toggleSelectMode(false);
-        renderConfigs(); saveAll(); showToast('حذف شد','success');
-    }
-
-    function shareSelected() {
-        const list = configs.filter(c=>selectedIds.has(c.id) && c.url).map(c=>c.url);
-        if (!list.length) return showToast('هیچ URLی برای اشتراک نیست','info');
-        const text = list.join('\n');
-        navigator.clipboard.writeText(text).then(()=>{
-            showToast(`${list.length} کانفیگ کپی شد`,'success');
-            if (navigator.share) navigator.share({ title:'اشتراک کانفیگ‌ها', text }).catch(()=>{});
-        });
-    }
-
-    function deleteAllInScope() {
-        const scope = getScopedConfigs();
-        if (scope.length===0) return showToast('چیزی برای حذف نیست','info');
-        if (!confirm(`حذف ${scope.length} کانفیگ؟ این عمل قابل بازگشت نیست`)) return;
-        if (currentFolderId) {
-            const rmIds = new Set(scope.map(c=>c.id));
-            configs = configs.filter(c=>!rmIds.has(c.id));
-            if (currentConfig && rmIds.has(currentConfig.id)) {
-                currentConfig = null; isConnected=false; updateConnectionStatus();
-            }
-        } else {
-            configs = [];
-            currentConfig = null; isConnected=false; updateConnectionStatus();
-        }
-        selectedIds.clear(); toggleSelectMode(false);
-        renderConfigs(); saveAll(); showToast('حذف همه انجام شد','success');
-    }
-
-    // ------------------ Render ------------------
+    // ====== Render Configs ======
     function renderConfigs() {
-        const configsList = document.getElementById('configsList');
-        configsList.innerHTML = '';
-
+        const list = document.getElementById('configsList'); list.innerHTML='';
         const scope = getScopedConfigs();
         sortConfigsByPing(scope);
 
-        scope.forEach(config => {
-            const isSelected = selectedIds.has(config.id);
-            const pingClass = getPingColorClass(config.ping);
-            const configElement = document.createElement('div');
-            configElement.className = `config-card p-6 rounded-xl transition-all duration-300 ${isSelected?'ring-2 ring-blue-500':''}`;
-            configElement.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4 space-x-reverse">
-              ${selectMode ? `<input type="checkbox" class="cfg-select accent-blue-500 w-4 h-4 mr-2" data-id="${config.id}" ${isSelected?'checked':''}>` : ''}
-              <div class="w-4 h-4 rounded-full ${config.status === 'connected' ? 'bg-green-400' : 'bg-slate-500'} shadow-lg"></div>
-              <div>
-                <h4 class="font-bold text-white text-lg mb-1">${config.name || 'کانفیگ'}</h4>
-                <p class="text-sm text-slate-400">${config.location || '🌍'} • ${config.type || 'Unknown'}</p>
-                <p class="text-sm ${config.ping ? pingClass : 'text-slate-400'} font-bold mt-1" id="ping-${config.id}">
-                  ${config.ping ? (config.ping === 'timeout' ? 'تایم‌اوت' : config.ping + 'ms') : '--'}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-2 space-x-reverse">
-              <button class="pin-btn text-sky-400 hover:text-sky-300 transition-colors p-2 rounded-lg hover:bg-slate-700" data-id="${config.id}" title="پین">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2l-1 7 5 5-2 2-5-5-7 1 10-10z"/></svg>
-              </button>
-              <button class="ping-btn text-yellow-400 hover:text-yellow-300 transition-colors p-2 rounded-lg hover:bg-slate-700" data-id="${config.id}" title="تست پینگ">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-              </button>
-              <button class="share-btn text-green-400 hover:text-green-300 transition-colors p-2 rounded-lg hover:bg-slate-700" data-id="${config.id}" title="اشتراک کانفیگ">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.50-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
-              </button>
-              <button class="connect-btn ${config.status === 'connected' ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'} text-white px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300 neon-button" data-id="${config.id}">
-                ${config.status === 'connected' ? 'قطع' : 'اتصال'}
-              </button>
-              <button class="delete-btn text-red-400 hover:text-red-300 transition-colors p-2 rounded-lg hover:bg-slate-700" data-id="${config.id}">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-              </button>
-            </div>
-          </div>
+        scope.forEach(cfg=>{
+            const card = document.createElement('div'); card.className='cc p-6 rounded-xl flex items-center justify-between';
+            // Left section
+            const left = document.createElement('div'); left.className='flex items-center gap-3';
+            if (selectMode) {
+                const cb=document.createElement('input'); cb.type='checkbox'; cb.checked = selectedIds.has(cfg.id);
+                cb.addEventListener('change', ()=>{ if(cb.checked) selectedIds.add(cfg.id); else selectedIds.delete(cfg.id); updateSelectionBar(); });
+                left.appendChild(cb);
+            }
+            const dot = document.createElement('div'); dot.className='w-4 h-4 rounded-full'; dot.style.background = (cfg.status==='connected')? '#34d399' : '#64748b'; left.appendChild(dot);
+            const meta = document.createElement('div'); meta.innerHTML = `
+          <div class="font-bold text-white">${escapeHtml(cfg.name)}</div>
+          <div class="text-sm text-slate-400">${escapeHtml(cfg.location||'🌍')} • ${escapeHtml(cfg.type||'')}</div>
+          <div id="ping-${cfg.id}" class="text-sm font-bold mt-1 ${cfg.ping?getPingColorClass(cfg.ping):'text-slate-400'}">${cfg.ping ? (cfg.ping==='timeout'?'تایم‌اوت':cfg.ping+'ms') : '--'}</div>
         `;
-            configsList.appendChild(configElement);
+            left.appendChild(meta);
+
+            // Actions (desktop)
+            const actions = document.createElement('div'); actions.className='ca';
+            actions.innerHTML = `
+          <button class="px-3 py-1 rounded bg-slate-700" data-act="copy">کپی</button>
+          <button class="px-3 py-1 rounded" data-act="pin">${cfg.pinned?'⭐':'☆'}</button>
+          <button class="px-3 py-1 rounded bg-yellow-500 text-black" data-act="ping">پینگ</button>
+          <button class="px-3 py-1 rounded bg-emerald-600" data-act="share">اشتراک</button>
+          <button class="px-3 py-1 rounded bg-blue-600" data-act="connect">${cfg.status==='connected'?'قطع':'اتصال'}</button>
+          <button class="px-3 py-1 rounded bg-slate-600" data-act="move">انتقال</button>
+          <button class="px-3 py-1 rounded bg-red-600" data-act="delete">حذف</button>
+        `;
+
+            // Hamburger (mobile)
+            const burger = document.createElement('button'); burger.className='cmb ib'; burger.textContent='☰';
+            burger.addEventListener('click', (e)=> { e.stopPropagation(); openCardMenu(cfg, burger); });
+
+            // Bind desktop action handlers
+            actions.querySelectorAll('button').forEach(b=>{
+                b.addEventListener('click',(e)=>{
+                    e.stopPropagation();
+                    const act = b.dataset.act;
+                    handleCardAction(act, cfg);
+                });
+            });
+
+            card.appendChild(left);
+            card.appendChild(actions);
+            card.appendChild(burger);
+            list.appendChild(card);
         });
 
-        // Button events
-        document.querySelectorAll('.connect-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.dataset.id);
-                toggleConnection(id);
-            });
-        });
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.dataset.id);
-                // if selected, remove from selection
-                selectedIds.delete(id);
-                deleteConfig(id);
-            });
-        });
-        document.querySelectorAll('.ping-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.dataset.id);
-                testSinglePing(id);
-            });
-        });
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.dataset.id);
-                shareConfig(id);
-            });
-        });
-        document.querySelectorAll('.pin-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = parseFloat(btn.dataset.id);
-                const cfg = configs.find(c=>c.id===id);
-                if (!cfg) return;
-                cfg.pinned = !cfg.pinned;
-                saveAll(); renderConfigs();
-            });
-        });
-        document.querySelectorAll('.cfg-select').forEach(cb=>{
-            cb.addEventListener('change', ()=>{
-                const id = parseFloat(cb.dataset.id);
-                if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
-                updateSelectionBar();
-            });
-        });
+        updateSelectionBar();
     }
 
-    // ------------------ Events ------------------
-    function setupEventListeners() {
-        // Tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-        });
-
-        // Main connect
-        document.getElementById('connectBtn').addEventListener('click', () => {
-            if (currentConfig) toggleConnection(currentConfig.id);
-            else if (configs.length > 0) toggleConnection(getScopedConfigs()[0]?.id || configs[0].id);
-        });
-
-        // Bulk actions
-        document.getElementById('pingAllBtn').addEventListener('click', () => testAllPings());
-        document.getElementById('cleanupBtn').addEventListener('click', cleanupInactiveServers);
-        document.getElementById('shareAllBtn').addEventListener('click', shareAllConfigs);
-        document.getElementById('shareActiveBtn').addEventListener('click', shareActiveConfigs);
-        document.getElementById('clipboardBtn').addEventListener('click', importFromClipboard);
-
-        // Folder bar
-        document.getElementById('createFolderBtn').addEventListener('click', createFolder);
-
-        // Select mode + actions
-        document.getElementById('selectModeBtn').addEventListener('click', ()=>toggleSelectMode());
-        document.getElementById('deleteAllBtn').addEventListener('click', deleteAllInScope);
-        document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
-        document.getElementById('shareSelectedBtn').addEventListener('click', shareSelected);
-        document.getElementById('pingSelectedBtn').addEventListener('click', () => testAllPings(getSelectedOrScopeConfigs()));
-        document.getElementById('moveToFolderBtn').addEventListener('click', moveSelectedToFolder);
-
-        // Modals add config
-        document.getElementById('addConfigBtn').addEventListener('click', () => toggleModal('addConfigModal', true));
-        document.getElementById('cancelConfigBtn').addEventListener('click', () => toggleModal('addConfigModal', false));
-        document.getElementById('saveConfigBtn').addEventListener('click', saveNewConfig);
-
-        // Settings
-        document.getElementById('autoConnectToggle').addEventListener('change', savePrefs);
-        document.getElementById('defaultProto').addEventListener('change', savePrefs);
-
-        // Tools
-        document.getElementById('speedTestBtn').addEventListener('click', simulateSpeedTest);
-        document.getElementById('pingTestToolBtn').addEventListener('click', () => testAllPings());
-        document.getElementById('scanQrBtn').addEventListener('click', () => startQrScan());
-        document.getElementById('backupBtn').addEventListener('click', exportBackup);
-        document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('backupInput').click());
-        document.getElementById('backupInput').addEventListener('change', (e) => importBackupFromFile(e.target.files));
-
-        // QR modal close
-        document.getElementById('closeQrBtn').addEventListener('click', stopQrScan);
-    }
-
-    function toggleModal(id, open) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (open) { el.classList.remove('hidden'); el.classList.add('flex'); }
-        else { el.classList.add('hidden'); el.classList.remove('flex'); }
-    }
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('tab-active');
-            btn.classList.add('text-slate-400');
-        });
-        const btn = document.querySelector(`[data-tab="${tabName}"]`);
-        if (btn) {
-            btn.classList.add('tab-active');
-            btn.classList.remove('text-slate-400');
-        }
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-        document.getElementById(tabName).classList.remove('hidden');
-    }
-
-    // ------------------ Actions ------------------
-    function toggleConnection(configId) {
-        const cfg = configs.find(c => c.id === configId);
-        if (!cfg) return;
-
-        // Disconnect all
-        configs.forEach(c => c.status = 'disconnected');
-
-        if (!isConnected || (currentConfig?.id !== configId)) {
-            cfg.status = 'connected';
-            currentConfig = cfg;
-            isConnected = true;
-        } else {
-            currentConfig = null;
-            isConnected = false;
-        }
-
-        updateConnectionStatus();
-        renderConfigs();
-        saveAll();
-    }
-
-    function updateConnectionStatus() {
-        const statusIndicator = document.getElementById('connectionStatus');
-        const statusText = document.getElementById('statusText');
-        const connectBtn = document.getElementById('connectBtn');
-
-        if (isConnected && currentConfig) {
-            statusIndicator.className = 'status-indicator bg-green-400';
-            statusText.textContent = `متصل به ${currentConfig.name}`;
-            connectBtn.textContent = 'قطع اتصال';
-            connectBtn.className = 'neon-button bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300';
-        } else {
-            statusIndicator.className = 'status-indicator bg-slate-500';
-            statusText.textContent = 'آماده اتصال';
-            connectBtn.textContent = 'اتصال';
-            connectBtn.className = 'neon-button bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300';
+    function handleCardAction(act, cfg) {
+        closeAnyMenu();
+        if (act==='copy') {
+            navigator.clipboard.writeText(cfg.url||'').then(()=>showToast('کپی شد','success'));
+        } else if (act==='pin') {
+            cfg.pinned = !cfg.pinned; saveAll(); renderConfigs();
+        } else if (act==='ping') {
+            testSinglePing(cfg.id);
+        } else if (act==='share') {
+            shareConfig(cfg.id);
+        } else if (act==='move') {
+            promptMoveSingleToFolder(cfg.id);
+        } else if (act==='delete') {
+            deleteConfig(cfg.id);
+        } else if (act==='connect') {
+            toggleConnectionTo(cfg.id);
         }
     }
 
-    function deleteConfig(configId) {
+    // ====== Menus ======
+    function closeAnyMenu() {
+        if (openMenuEl) { openMenuEl.remove(); openMenuEl=null; }
+    }
+    document.addEventListener('click', (e)=> {
+        if (openMenuEl && !openMenuEl.contains(e.target)) closeAnyMenu();
+    });
+
+    function openCardMenu(cfg, anchorEl) {
+        closeAnyMenu();
+        const m = document.createElement('div');
+        m.className='mp';
+        m.innerHTML = `
+        <div class="mi" data-act="ping">🏓 پینگ</div>
+        <div class="mi" data-act="copy">📋 کپی لینک</div>
+        <div class="mi" data-act="share">🔗 اشتراک</div>
+        <div class="mi" data-act="connect">${cfg.status==='connected'?'⛔ قطع':'✅ اتصال'}</div>
+        <div class="mi" data-act="move">📂 انتقال به پوشه</div>
+        <div class="mi" data-act="pin">${cfg.pinned?'⭐ حذف پین':'⭐ پین'}</div>
+        <div class="mi" data-act="delete">🗑 حذف</div>
+      `;
+        document.body.appendChild(m);
+        positionMenu(m, anchorEl);
+        openMenuEl = m;
+
+        m.querySelectorAll('.mi').forEach(item=>{
+            item.addEventListener('click', ()=>{
+                const act = item.dataset.act;
+                handleCardAction(act, cfg);
+            });
+        });
+    }
+
+    function openBulkMenu(anchorEl) {
+        closeAnyMenu();
+        const m = document.createElement('div');
+        m.className='mp';
+        m.innerHTML = `
+        <div class="mi" data-act="pingAll">🏓 پینگ همه</div>
+        <div class="mi" data-act="cleanup">🧹 حذف غیرفعال‌ها</div>
+        <div class="mi" data-act="shareAll">🔗 اشتراک همه</div>
+        <div class="mi" data-act="shareActive">✅ اشتراک فعال‌ها</div>
+        <div class="mi" data-act="importClipboard">📋 واردکردن از کلیپ‌بورد</div>
+        <div class="mi" data-act="selectMode">🖱 حالت انتخاب</div>
+        <div class="mi" data-act="deleteAll">🗑 حذف همه</div>
+        <div class="mi" data-act="addConfig">➕ افزودن کانفیگ</div>
+        <div class="mi" data-act="newFolder">📁 پوشه جدید</div>
+      `;
+        document.body.appendChild(m);
+        positionMenu(m, anchorEl);
+        openMenuEl = m;
+
+        m.querySelectorAll('.mi').forEach(item=>{
+            item.addEventListener('click', ()=>{
+                const act = item.dataset.act;
+                closeAnyMenu();
+                if (act==='pingAll') testAllPings();
+                else if (act==='cleanup') cleanupInactiveServers();
+                else if (act==='shareAll') shareAllConfigs();
+                else if (act==='shareActive') shareActiveConfigs();
+                else if (act==='importClipboard') importFromClipboard();
+                else if (act==='selectMode') toggleSelectMode(true);
+                else if (act==='deleteAll') deleteAllInScope();
+                else if (act==='addConfig') toggleModal('addConfigModal', true);
+                else if (act==='newFolder') createFolder();
+            });
+        });
+    }
+
+    function positionMenu(menuEl, anchorEl) {
+        const r = anchorEl.getBoundingClientRect();
+        const top = r.bottom + window.scrollY + 6;
+        const left = r.left + window.scrollX - (menuEl.offsetWidth - r.width);
+        menuEl.style.top = top + 'px';
+        menuEl.style.left = Math.max(8, left) + 'px';
+    }
+
+    // ====== Selection Bar ======
+    function updateSelectionBar() {
+        const bar = document.getElementById('selectionBar');
+        const cnt = document.getElementById('selectionCount');
+        const btn = document.getElementById('selectModeBtn');
+        if (selectMode) { bar.style.display='flex'; cnt.innerText = selectedIds.size + ' مورد انتخاب شده'; if (btn) btn.innerText='پایان انتخاب'; }
+        else { bar.style.display='none'; selectedIds.clear(); if (btn) btn.innerText='انتخاب'; }
+    }
+    function toggleSelectMode(force) {
+        selectMode = (force !== undefined) ? force : !selectMode;
+        if (!selectMode) selectedIds.clear();
+        renderConfigs(); updateSelectionBar();
+    }
+
+    // ====== Core Actions ======
+    function deleteConfig(id) {
         if (!confirm('آیا از حذف این کانفیگ اطمینان دارید؟')) return;
-        configs = configs.filter(c => c.id !== configId);
-        if (currentConfig && currentConfig.id === configId) {
-            currentConfig = null;
-            isConnected = false;
-            updateConnectionStatus();
-        }
-        selectedIds.delete(configId);
-        renderConfigs();
-        saveAll();
-        showToast('کانفیگ حذف شد', 'success');
+        const wasCurrent = currentConfig && currentConfig.id===id;
+        configs = configs.filter(c=>c.id!==id);
+        if (wasCurrent) { currentConfig=null; isConnected=false; updateConnectionStatus(); }
+        selectedIds.delete(id);
+        saveAll(); renderAll(); showToast('کانفیگ حذف شد','success');
+    }
+    function deleteAllInScope() {
+        const scope = getScopedConfigs();
+        if (scope.length===0) return showToast('چیزی برای حذف نیست','info');
+        if (!confirm(`حذف ${scope.length} کانفیگ؟`)) return;
+        const rmIds = new Set(scope.map(c=>c.id));
+        const wasCurrent = currentConfig && rmIds.has(currentConfig.id);
+        configs = configs.filter(c=>!rmIds.has(c.id));
+        if (wasCurrent) { currentConfig=null; isConnected=false; updateConnectionStatus(); }
+        saveAll(); renderAll(); showToast('حذف انجام شد','success');
     }
 
-    function saveNewConfig() {
-        const url = document.getElementById('configUrl').value.trim();
-        if (!url) return showToast('لطفاً لینک کانفیگ را وارد کنید', 'error');
-        if (!url.match(/^(vmess|vless|trojan|ss):\/\//)) return showToast('لینک کانفیگ معتبر نیست', 'error');
-
-        // Dedupe by URL
-        if (configs.some(c => c.url === url)) {
-            toggleModal('addConfigModal', false);
-            document.getElementById('configUrl').value = '';
-            return showToast('این کانفیگ قبلاً اضافه شده', 'info');
-        }
-
-        const { name, type } = parseConfigFromUrl(url);
-        const newConfig = {
-            id: Date.now() + Math.random(),
-            name, type,
-            ping: undefined,
-            status: 'disconnected',
-            location: '🌍 جدید',
-            url,
-            folderId: currentFolderId || null,
-            pinned: false
-        };
-        configs.push(newConfig);
-        renderConfigs();
-        saveAll();
-        toggleModal('addConfigModal', false);
-        document.getElementById('configUrl').value = '';
-        showToast('کانفیگ اضافه شد', 'success');
+    function shareConfig(id) {
+        const cfg = configs.find(c=>c.id===id); if (!cfg || !cfg.url) return showToast('کانفیگ یافت نشد','error');
+        navigator.clipboard.writeText(cfg.url).then(()=>{ showToast('کپی شد','success'); if (navigator.share) navigator.share({ title: cfg.name, text: cfg.url }).catch(()=>{}); });
+    }
+    function shareAllConfigs() {
+        const scope = getSelectedOrScopeConfigs();
+        const urls = scope.filter(c=>c.url).map(c=>c.url);
+        if (!urls.length) return showToast('هیچ URLی در این محدوده نیست','info');
+        const text = urls.join('\n');
+        navigator.clipboard.writeText(text).then(()=>{ showToast(`${urls.length} کانفیگ کپی شد`,'success'); if (navigator.share) navigator.share({ title:'کانفیگ‌ها', text }).catch(()=>{}); });
+    }
+    function shareActiveConfigs() {
+        const scope = getSelectedOrScopeConfigs().filter(c=>c.ping!=='timeout' && c.url);
+        if (!scope.length) return showToast('هیچ کانفیگ فعالی موجود نیست','info');
+        const text = scope.map(c=>c.url).join('\n');
+        navigator.clipboard.writeText(text).then(()=>{ showToast(`${scope.length} کانفیگ فعال کپی شد`,'success'); if (navigator.share) navigator.share({ title:'کانفیگ‌های فعال', text }).catch(()=>{}); });
     }
 
-    // ------------------ Ping ------------------
-    function testSinglePing(configId) {
-        const config = configs.find(c => c.id === configId);
-        if (!config) return;
-        const pingElement = document.getElementById(`ping-${configId}`);
-        if (pingElement) {
-            pingElement.classList.add('ping-testing');
-            pingElement.textContent = 'تست...';
-        }
+    function moveSelectedToFolder() {
+        if (selectedIds.size===0) return showToast('هیچ‌چیزی انتخاب نشده','info');
+        if (folders.length===0) return showToast('پوشه‌ای وجود ندارد','info');
+        const names = folders.map((f,i)=>`${i+1}) ${f.name}`).join('\n');
+        const ans = prompt('انتقال به کدام پوشه؟ شماره را وارد کنید:\n'+names);
+        const idx = parseInt(ans,10)-1;
+        if (isNaN(idx) || idx<0 || idx>=folders.length) return showToast('شماره نامعتبر','error');
+        const fid = folders[idx].id;
+        configs.forEach(c=>{ if (selectedIds.has(c.id)) c.folderId = fid; });
+        selectedIds.clear(); toggleSelectMode(false); saveAll(); renderAll(); showToast('منتقل شد','success');
+    }
+    function promptMoveSingleToFolder(configId) {
+        if (folders.length===0) return showToast('پوشه‌ای وجود ندارد','info');
+        const names = folders.map((f,i)=>`${i+1}) ${f.name}`).join('\n');
+        const ans = prompt('انتقال به کدام پوشه؟ شماره را وارد کنید:\n'+names);
+        const idx = parseInt(ans,10)-1;
+        if (isNaN(idx) || idx<0 || idx>=folders.length) return showToast('شماره نامعتبر','error');
+        const fid = folders[idx].id;
+        const cfg = configs.find(c=>c.id===configId); if (!cfg) return;
+        cfg.folderId = fid; saveAll(); renderAll(); showToast('منتقل شد','success');
+    }
+    function deleteSelected() {
+        if (selectedIds.size===0) return showToast('هیچ‌چیزی انتخاب نشده','info');
+        if (!confirm(`حذف ${selectedIds.size} مورد؟`)) return;
+        const rm = new Set(selectedIds);
+        const wasCurrent = currentConfig && rm.has(currentConfig.id);
+        configs = configs.filter(c=>!rm.has(c.id));
+        if (wasCurrent) { currentConfig=null; isConnected=false; updateConnectionStatus(); }
+        selectedIds.clear(); toggleSelectMode(false); saveAll(); renderAll(); showToast('موارد حذف شدند','success');
+    }
+    function createFolder() {
+        const name = prompt('نام پوشه را وارد کنید:'); if (!name) return;
+        folders.push({ id: Date.now()+Math.random(), name: name.trim() }); saveAll(); renderFolderBar(); showToast('پوشه ساخته شد','success');
+    }
 
-        setTimeout(() => {
-            if (Math.random() < 0.2) {
-                config.ping = 'timeout';
-            } else {
-                config.ping = Math.floor(Math.random() * 300) + 20;
-                // تاریخچه ساده (آخرین 5 پینگ) - اختیاری
-                config.pastPings = (config.pastPings || []).slice(-4);
-                config.pastPings.push(config.ping);
+    // ====== Ping (simulated) ======
+    function testSinglePing(id) {
+        const cfg = configs.find(c=>c.id===id); if(!cfg) return;
+        const el = document.getElementById('ping-'+id); if (el) { el.textContent='تست...'; el.classList.add('p-testing'); }
+        setTimeout(()=>{
+            if (Math.random()<0.18) cfg.ping='timeout';
+            else { cfg.ping = Math.floor(Math.random()*330)+20; cfg.pastPings = (cfg.pastPings||[]).slice(-4); cfg.pastPings.push(cfg.ping); }
+            if (el) {
+                el.className = `text-sm font-bold mt-1 ${cfg.ping?getPingColorClass(cfg.ping):'text-slate-400'}`;
+                el.textContent = cfg.ping==='timeout' ? 'تایم‌اوت' : `${cfg.ping}ms`;
+                el.classList.remove('p-testing');
             }
-            if (pingElement) {
-                const cls = getPingColorClass(config.ping);
-                pingElement.className = `text-sm ${config.ping === 'timeout' ? 'text-red-500' : cls} font-bold mt-1`;
-                pingElement.textContent = config.ping === 'timeout' ? 'تایم‌اوت' : `${config.ping}ms`;
-                pingElement.classList.remove('ping-testing');
-            }
-
-            sortConfigsByPing();
-            renderConfigs();
-            saveAll();
-        }, 1200 + Math.random() * 800);
+            saveAll(); renderConfigs();
+        }, 800+Math.random()*1200);
     }
-
     function testAllPings(listArg) {
         if (isPingTesting) return;
         const list = listArg || getSelectedOrScopeConfigs();
-        if (list.length === 0) return;
-
+        if (!list || list.length===0) return showToast('هیچ کانفیگی برای پینگ نیست','info');
         isPingTesting = true;
-
-        const btn = document.getElementById('pingAllBtn');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = `
-          <svg class="w-4 h-4 animate-spin" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg>
-          <span>در حال تست...</span>
-        `;
-        }
-
-        // mark as testing in DOM if visible
-        list.forEach(cfg => {
-            const el = document.getElementById(`ping-${cfg.id}`);
-            if (el) { el.textContent = 'تست...'; el.classList.add('ping-testing'); }
+        const btn = document.getElementById('pingAllBtn'); if (btn) { btn.disabled=true; btn.classList.add('opacity-80'); }
+        list.forEach(cfg=>{
+            const el = document.getElementById('ping-'+cfg.id);
+            if (el) { el.textContent='تست...'; el.classList.add('p-testing'); }
         });
-
-        // Run all concurrently (simulated)
-        const tasks = list.map(cfg => new Promise(resolve => {
-            setTimeout(() => {
-                if (Math.random() < 0.2) cfg.ping = 'timeout';
-                else {
-                    cfg.ping = Math.floor(Math.random() * 300) + 20;
-                    cfg.pastPings = (cfg.pastPings || []).slice(-4);
-                    cfg.pastPings.push(cfg.ping);
-                }
-
-                const el = document.getElementById(`ping-${cfg.id}`);
-                if (el) {
-                    const cls = getPingColorClass(cfg.ping);
-                    el.className = `text-sm ${cfg.ping === 'timeout' ? 'text-red-500' : cls} font-bold mt-1`;
-                    el.textContent = cfg.ping === 'timeout' ? 'تایم‌اوت' : `${cfg.ping}ms`;
-                    el.classList.remove('ping-testing');
-                }
-                resolve();
-            }, 800 + Math.random() * 1200);
+        const tasks = list.map(cfg=> new Promise(res=>{
+            setTimeout(()=>{ if (Math.random()<0.18) cfg.ping='timeout'; else { cfg.ping=Math.floor(Math.random()*330)+20; cfg.pastPings=(cfg.pastPings||[]).slice(-4); cfg.pastPings.push(cfg.ping);} const el=document.getElementById('ping-'+cfg.id); if(el){ el.className=`text-sm font-bold mt-1 ${cfg.ping?getPingColorClass(cfg.ping):'text-slate-400'}`; el.textContent= cfg.ping==='timeout'?'تایم‌اوت':`${cfg.ping}ms`; el.classList.remove('p-testing'); } res(); }, 700+Math.random()*900);
         }));
-
-        Promise.all(tasks).then(() => {
-            isPingTesting = false;
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = `
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            <span>تست پینگ همه</span>
-          `;
-            }
-            sortConfigsByPing();
-            renderConfigs();
-            saveAll();
-            showToast('تست پینگ انجام شد', 'success');
-        });
+        Promise.all(tasks).then(()=>{ isPingTesting=false; if(btn){ btn.disabled=false; btn.classList.remove('opacity-80'); } saveAll(); renderConfigs(); showToast('پینگ‌ها تکمیل شد','success'); });
     }
 
-    // ------------------ Clipboard Import ------------------
+    // ====== Cleanup inactive ======
+    function cleanupInactiveServers() {
+        const scope = getSelectedOrScopeConfigs();
+        const timeouts = scope.filter(c=>c.ping==='timeout');
+        if (timeouts.length===0) return showToast('هیچ سرور غیرفعالی نیست','info');
+        if (!confirm(`حذف ${timeouts.length} سرور غیرفعال؟`)) return;
+        const rm = new Set(timeouts.map(c=>c.id));
+        const wasCurrent = currentConfig && rm.has(currentConfig.id);
+        configs = configs.filter(c=>!rm.has(c.id));
+        if (wasCurrent) { currentConfig=null; isConnected=false; updateConnectionStatus(); }
+        saveAll(); renderAll(); showToast('سرورهای غیرفعال حذف شدند','success');
+    }
+
+    // ====== Clipboard Import / Backup ======
     async function importFromClipboard() {
         try {
             const text = await navigator.clipboard.readText();
-            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-
-            let imported = 0;
-            const existing = new Set(configs.map(c => c.url));
-
-            for (const line of lines) {
-                if (/^(vmess|vless|trojan|ss):\/\//.test(line)) {
-                    if (existing.has(line)) continue;
-                    const { name, type } = parseConfigFromUrl(line);
-                    configs.push({
-                        id: Date.now() + Math.random(),
-                        name, type,
-                        ping: undefined,
-                        status: 'disconnected',
-                        location: '🌍 جدید',
-                        url: line,
-                        folderId: currentFolderId || null,
-                        pinned: false
-                    });
-                    existing.add(line);
-                    imported++;
-                }
-            }
-
-            if (imported) {
-                renderConfigs();
-                saveAll();
-                showToast(`${imported} کانفیگ اضافه شد`, 'success');
-            } else {
-                showToast('هیچ کانفیگ جدیدی در کلیپ‌بورد نبود', 'info');
-            }
-        } catch (e) {
-            showToast('دسترسی به کلیپ‌بورد مجاز نیست', 'error');
-        }
+            const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+            let added=0; lines.forEach(line=> { if (/^(vmess|vless|trojan|ss):\/\//.test(line)) if (addConfigFromUrl(line, currentFolderId)) added++; });
+            if (added) showToast(`${added} کانفیگ اضافه شد`,'success'); else showToast('چیزی برای اضافه کردن یافت نشد','info');
+        } catch(e) { showToast('دسترسی به کلیپ‌بورد ممکن نیست','error'); }
     }
-
-    // ------------------ Cleanup ------------------
-    function cleanupInactiveServers() {
-        const scope = getSelectedOrScopeConfigs();
-        const timeouts = scope.filter(c => c.ping === 'timeout');
-        if (timeouts.length === 0) return showToast('هیچ سرور غیرفعال نیست','info');
-
-        if (confirm(`${timeouts.length} سرور غیرفعال حذف شوند؟`)) {
-            const rm = new Set(timeouts.map(c=>c.id));
-            configs = configs.filter(c => !rm.has(c.id));
-
-            if (currentConfig && rm.has(currentConfig.id)) {
-                currentConfig = null;
-                isConnected = false;
-                updateConnectionStatus();
-            }
-
-            selectedIds.forEach(id => { if (rm.has(id)) selectedIds.delete(id); });
-            renderConfigs();
-            saveAll();
-            showToast('سرورهای غیرفعال حذف شدند', 'success');
-        }
-    }
-
-    // ------------------ Share ------------------
-    function shareConfig(configId) {
-        const config = configs.find(c => c.id === configId);
-        if (!config || !config.url) return showToast('کانفیگ یافت نشد', 'error');
-
-        navigator.clipboard.writeText(config.url).then(() => {
-            showToast(`کانفیگ "${config.name}" کپی شد`, 'success');
-            if (navigator.share) {
-                navigator.share({ title: `کانفیگ ${config.name}`, text: config.url }).catch(() => {});
-            }
-        }).catch(() => showToast('خطا در کپی کردن', 'error'));
-    }
-
-    function shareAllConfigs() {
-        const scope = getSelectedOrScopeConfigs();
-        if (scope.length === 0) return showToast('هیچ کانفیگی موجود نیست', 'info');
-        const urls = scope.filter(c => c.url).map(c => c.url);
-        if (!urls.length) return showToast('هیچ کانفیگ معتبری نیست', 'info');
-
-        const text = urls.join('\n');
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`${urls.length} کانفیگ کپی شد`, 'success');
-            if (navigator.share) navigator.share({ title: 'کانفیگ‌ها', text }).catch(() => {});
-        }).catch(() => showToast('خطا در کپی', 'error'));
-    }
-
-    function shareActiveConfigs() {
-        const scope = getSelectedOrScopeConfigs().filter(c => c.ping !== 'timeout' && c.url);
-        if (scope.length === 0) return showToast('هیچ کانفیگ فعالی موجود نیست', 'info');
-
-        const text = scope.map(c => c.url).join('\n');
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`${scope.length} کانفیگ فعال کپی شد`, 'success');
-            if (navigator.share) navigator.share({ title: 'کانفیگ‌های فعال', text }).catch(() => {});
-        }).catch(() => showToast('خطا در کپی', 'error'));
-    }
-
-    // ------------------ QR Scan ------------------
-    let qrInstance = null;
-    async function startQrScan() {
-        toggleModal('qrModal', true);
-        try {
-            // Wait for lib
-            const waitLib = () => new Promise(res => {
-                if (window.Html5Qrcode) return res();
-                const t = setInterval(() => {
-                    if (window.Html5Qrcode) { clearInterval(t); res(); }
-                }, 100);
-            });
-            await waitLib();
-
-            const regionId = 'qrRegion';
-            if (qrInstance) {
-                try { await qrInstance.stop(); } catch {}
-                qrInstance = null;
-            }
-            qrInstance = new Html5Qrcode(regionId, { verbose: false });
-
-            const config = { fps: 10, qrbox: 250 };
-            const constraints = { facingMode: 'environment' };
-
-            await qrInstance.start(constraints, config, (decodedText) => {
-                if (!/^(vmess|vless|trojan|ss):\/\//.test(decodedText)) {
-                    showToast('QR معتبر نیست', 'error');
-                    return;
-                }
-                const { name, type } = parseConfigFromUrl(decodedText);
-                if (!configs.some(c => c.url === decodedText)) {
-                    configs.push({
-                        id: Date.now() + Math.random(),
-                        name, type,
-                        ping: undefined,
-                        status: 'disconnected',
-                        location: '🌍 QR',
-                        url: decodedText,
-                        folderId: currentFolderId || null,
-                        pinned: false
-                    });
-                    renderConfigs();
-                    saveAll();
-                    showToast('کانفیگ با QR اضافه شد', 'success');
-                } else {
-                    showToast('این کانفیگ قبلاً وجود دارد', 'info');
-                }
-                stopQrScan();
-            });
-
-        } catch (e) {
-            showToast('اشکال در دسترسی دوربین یا کتابخانه QR', 'error');
-        }
-    }
-
-    async function stopQrScan() {
-        try {
-            if (qrInstance) { await qrInstance.stop(); await qrInstance.clear(); }
-            qrInstance = null;
-        } catch {}
-        toggleModal('qrModal', false);
-    }
-
-    // ------------------ Backup / Restore ------------------
     function exportBackup() {
         const data = JSON.stringify({ configs, folders }, null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
+        const blob = new Blob([data], { type:'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'v2ray-backup.json';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        showToast('پشتیبان‌گیری انجام شد', 'success');
+        const a = document.createElement('a'); a.href=url; a.download='v2ray-backup.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('پشتیبان‌گیری انجام شد','success');
     }
-
     function importBackupFromFile(files) {
         if (!files || !files[0]) return;
         const reader = new FileReader();
         reader.onload = e => {
             try {
                 const parsed = JSON.parse(e.target.result);
-                // پشتیبانی از فرمت قدیمی (فقط آرایه configs) یا جدید (شیء با configs + folders)
-                let incomingConfigs = [];
-                let incomingFolders = [];
-                if (Array.isArray(parsed)) {
-                    incomingConfigs = parsed;
-                } else if (parsed && typeof parsed === 'object') {
-                    incomingConfigs = parsed.configs || [];
-                    incomingFolders = parsed.folders || [];
-                } else {
-                    throw new Error('bad format');
-                }
-
-                const existing = new Set(configs.map(c => c.url));
-                let added = 0;
-                incomingConfigs.forEach(c => {
-                    if (c.url && !existing.has(c.url)) {
-                        configs.push({
-                            id: Date.now() + Math.random(),
-                            name: c.name || 'کانفیگ',
-                            type: c.type || 'Unknown',
-                            ping: c.ping,
-                            status: 'disconnected',
-                            location: c.location || '🌍',
-                            url: c.url,
-                            folderId: c.folderId || null,
-                            pinned: !!c.pinned
-                        });
-                        existing.add(c.url);
-                        added++;
-                    }
-                });
-
-                // Merge folders (by name uniqueness)
-                const existingFolderNames = new Set(folders.map(f=>f.name));
-                incomingFolders.forEach(f=>{
-                    if (f?.name && !existingFolderNames.has(f.name)) {
-                        folders.push({ id: Date.now()+Math.random(), name: f.name });
-                    }
-                });
-
-                renderFolderBar();
-                renderConfigs();
-                saveAll();
-                showToast(`بازیابی انجام شد (${added} جدید)`, 'success');
-            } catch {
-                showToast('فایل پشتیبان نامعتبر است', 'error');
-            }
+                let incomingConfigs=[], incomingFolders=[];
+                if (Array.isArray(parsed)) incomingConfigs = parsed; else { incomingConfigs = parsed.configs||[]; incomingFolders = parsed.folders||[]; }
+                const existing = new Set(configs.map(c=>c.url)); let added=0;
+                incomingConfigs.forEach(c=>{ if (c.url && !existing.has(c.url)) { configs.push({ id: Date.now()+Math.random(), name:c.name||'کانفیگ', type:c.type||'Unknown', url:c.url, folderId:c.folderId||null, ping:c.ping, status:'disconnected', pinned:!!c.pinned }); added++; } });
+                incomingFolders.forEach(ff=>{ if (!folders.some(x=>x.name===ff.name)) folders.push({ id: Date.now()+Math.random(), name:ff.name }); });
+                saveAll(); renderAll(); showToast('بازیابی انجام شد ('+added+' جدید)','success');
+            } catch(e){ showToast('فایل پشتیبان نامعتبر','error'); }
         };
         reader.readAsText(files[0]);
     }
 
-    // ------------------ Parse Config ------------------
-    function parseConfigFromUrl(url) {
+    // ====== QR ======
+    async function handleQrFile(file) {
+        if (!file) return showToast('فایل معتبر نیست','error');
         try {
-            let name = 'کانفیگ جدید';
-            let type = 'Unknown';
-
-            if (url.startsWith('vmess://')) {
-                type = 'VMess';
-                try {
-                    const b64 = url.substring(8);
-                    const decoded = atob(b64.replace(/_/g, '/').replace(/-/g, '+'));
-                    const cfg = JSON.parse(decoded);
-                    name = cfg.ps || cfg.name || 'VMess Server';
-                } catch { name = 'VMess Server'; }
-            } else if (url.startsWith('vless://')) {
-                type = 'VLESS';
-                const m = url.match(/#(.+)$/);
-                name = m ? decodeURIComponent(m[1]) : 'VLESS Server';
-            } else if (url.startsWith('trojan://')) {
-                type = 'Trojan';
-                const m = url.match(/#(.+)$/);
-                name = m ? decodeURIComponent(m[1]) : 'Trojan Server';
-            } else if (url.startsWith('ss://')) {
-                type = 'Shadowsocks';
-                const m = url.match(/#(.+)$/);
-                name = m ? decodeURIComponent(m[1]) : 'Shadowsocks Server';
+            if (window.Html5Qrcode && typeof window.Html5Qrcode.scanFileV2 === 'function') {
+                const res = await Html5Qrcode.scanFileV2(file, {});
+                if (Array.isArray(res) && res.length) { res.forEach(r=>processQrDecoded(r.decodedText||r)); return; }
+                else if (typeof res === 'string') { processQrDecoded(res); return; }
             }
-            return { name, type };
-        } catch {
-            return { name: 'کانفیگ جدید', type: 'Unknown' };
+        } catch(e){ console.warn('scanFileV2 failed', e); }
+        // fallback with jsQR
+        const img = new Image();
+        img.onload = ()=> {
+            try {
+                const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d'); ctx.drawImage(img,0,0);
+                const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+                const code = jsQR(imageData.data, canvas.width, canvas.height);
+                if (code && code.data) { processQrDecoded(code.data); } else { showToast('QR در تصویر یافت نشد','info'); }
+            } catch(e){ showToast('خطا در پردازش تصویر','error'); }
+        };
+        img.onerror = ()=> showToast('قابل باز کردن تصویر نیست','error');
+        const reader = new FileReader(); reader.onload = ev => img.src = ev.target.result; reader.readAsDataURL(file);
+    }
+    function processQrDecoded(text) {
+        if (!text || !/^(vmess|vless|trojan|ss):\/\//.test(text)) return showToast('QR معتبر نیست','error');
+        if (addConfigFromUrl(text, currentFolderId)) showToast('کانفیگ اضافه شد','success'); else showToast('این کانفیگ قبلاً وجود دارد','info');
+    }
+    async function startQrScan(regionId='qrRegion') {
+        toggleModal('qrModal', true);
+        try {
+            await new Promise(res=>{ if (window.Html5Qrcode) return res(); const t=setInterval(()=>{ if (window.Html5Qrcode) { clearInterval(t); res(); } }, 100); });
+            if (qrInstance) { try{ await qrInstance.stop(); }catch{} qrInstance=null; }
+            qrInstance = new Html5Qrcode(regionId, { verbose:false });
+            const config = { fps:10, qrbox:250 };
+            const constraints = { facingMode:'environment' };
+            await qrInstance.start(constraints, config, decodedText=>{ processQrDecoded(decodedText); stopQrScan(); });
+        } catch(e){ showToast('دسترسی دوربین یا کتابخانه QR خطا دارد','error'); }
+    }
+    async function stopQrScan() { try{ if (qrInstance) { await qrInstance.stop(); await qrInstance.clear(); } }catch(e){} qrInstance=null; toggleModal('qrModal', false); }
+
+    // ====== Modal ======
+    function toggleModal(id, open) { const el=document.getElementById(id); if (!el) return; if (open) { el.classList.remove('hidden'); el.style.display='flex'; } else { el.classList.add('hidden'); el.style.display='none'; } }
+
+    // ====== Connection ======
+    function updateConnectionStatus() {
+        const statusIndicator = document.getElementById('connectionStatus');
+        const statusText = document.getElementById('statusText');
+        const connectBtn = document.getElementById('connectBtn');
+        if (isConnected && currentConfig) {
+            statusIndicator.className = 'si bg-green-400';
+            statusText.textContent = `متصل به ${currentConfig.name}`;
+            connectBtn.textContent = 'قطع اتصال';
+            connectBtn.className = 'nb bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-8 py-3 rounded-xl font-bold transition-all';
+        } else {
+            statusIndicator.className = 'si bg-slate-500';
+            statusText.textContent = 'آماده اتصال';
+            connectBtn.textContent = 'اتصال سریع';
+            connectBtn.className = 'nb bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all';
         }
     }
-
-    // ------------------ Speed Simulation ------------------
+    function getBestConfigInScope() {
+        const scope = getScopedConfigs().filter(c=>c.ping && c.ping!=='timeout');
+        if (scope.length===0) return getScopedConfigs()[0];
+        sortConfigsByPing(scope);
+        return scope[0];
+    }
+    function toggleConnectionTo(configId) {
+        const cfg = configs.find(c=>c.id===configId);
+        if (!cfg) return;
+        configs.forEach(c=>c.status='disconnected');
+        if (!isConnected || (currentConfig?.id !== configId)) {
+            cfg.status='connected'; currentConfig=cfg; isConnected=true;
+        } else {
+            currentConfig=null; isConnected=false;
+        }
+        saveAll(); renderConfigs(); updateConnectionStatus();
+    }
+    function quickConnect() {
+        if (isConnected && currentConfig) { toggleConnectionTo(currentConfig.id); return; }
+        const best = getBestConfigInScope();
+        if (!best) return showToast('ابتدا کانفیگی اضافه کنید','info');
+        toggleConnectionTo(best.id);
+    }
     function startSpeedSimulation() {
         setInterval(() => {
             if (isConnected) {
@@ -1208,7 +987,6 @@
                 const download = Math.floor(Math.random() * 80) + 20;
                 const upload = Math.floor(Math.random() * 40) + 10;
                 const data = (Math.random() * 5 + 1).toFixed(1);
-
                 document.getElementById('pingValue').textContent = ping + 'ms';
                 document.getElementById('downloadSpeed').textContent = `↓ ${download}MB/s`;
                 document.getElementById('uploadSpeed').textContent = `↑ ${upload}MB/s`;
@@ -1222,15 +1000,71 @@
         }, 2000);
     }
 
-    function simulateSpeedTest() {
-        if (!isConnected) return showToast('ابتدا به یک کانفیگ متصل شوید', 'info');
-        showToast('در حال تست سرعت...', 'info');
-        setTimeout(() => {
-            const down = (Math.random() * 120 + 20).toFixed(1);
-            const up = (Math.random() * 50 + 10).toFixed(1);
-            const ping = Math.floor(Math.random() * 40) + 20;
-            showToast(`نتیجه: ↓ ${down} Mbps • ↑ ${up} Mbps • ${ping} ms`, 'success');
-        }, 1500);
+    // ====== Events ======
+    function setupEventListeners() {
+        setupTabs();
+
+        // Header quick nav
+        document.getElementById('goSettingsBtn').addEventListener('click', ()=> switchTab('settings'));
+        document.getElementById('goToolsBtn').addEventListener('click', ()=> switchTab('tools'));
+
+        // Connect
+        document.getElementById('connectBtn').addEventListener('click', quickConnect);
+
+        // Top desktop buttons
+        document.getElementById('pingAllBtn').addEventListener('click', ()=>testAllPings());
+        document.getElementById('cleanupBtn').addEventListener('click', ()=>cleanupInactiveServers());
+        document.getElementById('shareAllBtn').addEventListener('click', ()=>shareAllConfigs());
+        document.getElementById('shareActiveBtn').addEventListener('click', ()=>shareActiveConfigs());
+        document.getElementById('clipboardBtn').addEventListener('click', ()=>importFromClipboard());
+        document.getElementById('selectModeBtn').addEventListener('click', ()=>toggleSelectMode());
+        document.getElementById('deleteAllBtn').addEventListener('click', ()=>deleteAllInScope());
+        document.getElementById('addConfigBtn').addEventListener('click', ()=>toggleModal('addConfigModal', true));
+        document.getElementById('createFolderBtn').addEventListener('click', createFolder);
+
+        // Bulk menu (mobile)
+        document.getElementById('bulkMenuBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openBulkMenu(e.currentTarget);
+        });
+
+        // Selection bar actions
+        document.getElementById('deleteSelectedBtn').addEventListener('click', ()=>deleteSelected());
+        document.getElementById('shareSelectedBtn').addEventListener('click', ()=>shareAllConfigs());
+        document.getElementById('pingSelectedBtn').addEventListener('click', ()=>testAllPings(getSelectedOrScopeConfigs()));
+        document.getElementById('moveToFolderBtn').addEventListener('click', ()=>moveSelectedToFolder());
+
+        // Add config modal
+        document.getElementById('cancelConfigBtn').addEventListener('click', ()=>toggleModal('addConfigModal', false));
+        document.getElementById('saveConfigBtn').addEventListener('click', ()=>{
+            const val=document.getElementById('configUrl').value.trim();
+            if(!val) return showToast('متن خالی است','info');
+            const lines=val.split('\n').map(l=>l.trim()).filter(Boolean);
+            let added=0; lines.forEach(l=>{ if (addConfigFromUrl(l, currentFolderId)) added++; });
+            document.getElementById('configUrl').value=''; toggleModal('addConfigModal', false);
+            showToast(added+' کانفیگ اضافه شد','success');
+        });
+
+        // Settings quick actions
+        document.getElementById('settingsImportClipboard').addEventListener('click', ()=>importFromClipboard());
+        document.getElementById('settingsExport').addEventListener('click', ()=>exportBackup());
+        document.getElementById('settingsImportFile').addEventListener('change', (e)=>importBackupFromFile(e.target.files));
+
+        // Tools
+        document.getElementById('speedTestBtn').addEventListener('click', ()=>{ if(!isConnected) return showToast('ابتدا اتصال را برقرار کنید','info'); showToast('در حال تست سرعت...','info'); setTimeout(()=>showToast('نتیجه: ↓ '+(Math.random()*120+20).toFixed(1)+' Mbps • ↑ '+(Math.random()*50+10).toFixed(1)+' Mbps','success'), 1500); });
+        document.getElementById('pingTestToolBtn').addEventListener('click', ()=> testAllPings());
+        document.getElementById('scanQrBtnTools').addEventListener('click', ()=> startQrScan('qrRegion'));
+        document.getElementById('qrFileInputTools').addEventListener('change', (e)=>{ const f=e.target.files && e.target.files[0]; if (f) handleQrFile(f); });
+
+        // QR modal close
+        document.getElementById('closeQrBtn').addEventListener('click', ()=> stopQrScan());
+    }
+
+    // ====== Render All ======
+    function renderAll() {
+        renderFolderBar();
+        renderConfigs();
     }
 </script>
 </body>
