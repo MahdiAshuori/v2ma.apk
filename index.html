@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>V2Ray Manager Pro</title>
+    <title>V2MA APP</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode" defer></script>
@@ -142,6 +142,10 @@
             background: linear-gradient(120deg,rgb(61, 128, 244), rgb(137, 92, 244));
             border: 2px solid rgba(0, 0, 0, 0.5);
             border-radius: 8px;
+            width: 230px;
+            position: relative;
+            right: 50%;
+            transform: translateX(50%);
         }
         .apt {
             direction: rtl;
@@ -149,44 +153,64 @@
             color: rgb(255, 255, 255);
             font-size: 30px;
             text-shadow: 0px 3px 5px rgb(0, 0, 0);
+
         }
 
         /* action menu small tweaks (matching original) */
         .menu-panel .mi + .mi { margin-top: 4px; }
+
+        /* نام کانفیگ - محدودیت کاراکتر و کوتاه‌سازی */
+        .config-name {
+            display: block;
+            max-width: 100%;     /* متناسب با عرض کارت */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal; /* اجازه بشکنه */
+            word-break: break-word; /* اگه خیلی طولانی باشه کلمه بشکنه */
+        }
+        #header{
+            justify-items: center;
+            align-items: center;
+            justify-items: center;
+            text-align: center;
+        }
+        @media (max-width: 700px) {
+            .config-name { max-width: 25ch; }
+        }
     </style>
 </head>
 <body class="min-h-screen text-white">
 <!-- Header -->
-<div class="hg p-6 shadow-2xl">
-    <div class="flex items-center justify-between">
+<div class="hg p-6 shadow-2xl" id="header">
+    <div class="flex items-center justify-center">
         <div class="flex items-center space-x-4 space-x-reverse">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.95 9 11 5.16-1.05 9-5.45 9-11V7l-10-5z"/>
-                </svg>
+                <img src="v2malogo.png">
+
+                </img>
             </div>
             <div>
                 <div class="tbx">
                     <h1 class="apt"><b>V2MA.apk</b></h1>
                 </div>
                 <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">V2Ray Manager Pro</h1>
-                <p class="text-sm text-slate-400">مدیریت پیشرفته کانفیگ‌ها با تکنولوژی هوشمند</p>
+                <p class="text-sm text-slate-400">مدیریت پیشرفته کانفیگ‌ها با قابلیت های متعدد<br>
+                    توسعه یافته توسط مهدی آشوری</p>
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <button id="goToolsBtn" class="ib" title="ابزارها">🧰</button>
-            <button id="goSettingsBtn" class="ib" title="تنظیمات">⚙️</button>
-            <div class="flex items-center space-x-3 space-x-reverse ml-3">
-                <div class="si bg-slate-500" id="connectionStatus"></div>
-                <span class="text-sm font-medium" id="statusText">آماده اتصال</span>
-            </div>
-        </div>
+
     </div>
 </div>
 
 <!-- Connection Panel -->
 <div class="p-6">
     <div class="g rounded-2xl p-8 mb-8 shadow-2xl">
+
+        <!-- وضعیت اتصال (منتقل شده از هدر) -->
+        <div class="flex items-center justify-center gap-3 mb-4">
+            <div class="si bg-slate-500" id="connectionStatus"></div>
+            <span class="text-sm font-medium" id="statusText">آماده اتصال</span>
+        </div>
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold text-slate-200">وضعیت اتصال</h2>
             <button id="connectBtn" class="nb bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300">
@@ -354,8 +378,10 @@
                 </div>
 
                 <div class="bg-gradient-to-br from-orange-600 to-orange-700 p-6 rounded-xl shadow-lg">
-                    <h4 class="font-bold text-white text-lg mb-2">پشتیبان‌گیری</h4>
-                    <p class="text-sm text-orange-100 mb-4">ذخیره و بازیابی کانفیگ‌ها و پوشه‌ها</p>
+                    <h4 class="font-bold text-white text-lg mb-2">پشتیبان‌گیری و بازیابی</h4>
+                    <p class="text-sm text-orange-100 mb-4">ذخیره و بازیابی کانفیگ‌ها و پوشه‌ها<br>
+                        می توانید کانفیگ های بروز را از کاناال تلگرام دریافت کنید<br>
+                        و از این قسمت وارد برنامه کنید</p>
                     <div class="grid grid-cols-2 gap-3">
                         <button id="backupBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">پشتیبان‌گیری</button>
                         <button id="restoreBtn" class="nb bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all duration-300">بازیابی</button>
@@ -596,8 +622,15 @@
                 left.appendChild(cb);
             }
             const dot = document.createElement('div'); dot.className='w-4 h-4 rounded-full'; dot.style.background = (cfg.status==='connected')? '#34d399' : '#64748b'; left.appendChild(dot);
-            const meta = document.createElement('div'); meta.innerHTML = `
-          <div class="font-bold text-white">${escapeHtml(cfg.name)}</div>
+            const meta = document.createElement('div');
+            let displayName = String(cfg.name || 'بدون نام');
+            if (window.innerWidth > 700) {
+                if (displayName.length > 70) displayName = displayName.slice(0,70) + '...';
+            } else {
+                if (displayName.length > 25) displayName = displayName.slice(0,25) + '...';
+            }
+            meta.innerHTML = `
+          <div class="font-bold text-white config-name">${escapeHtml(displayName)}</div>
           <div class="text-sm text-slate-400">${escapeHtml(cfg.location||'🌍')} • ${escapeHtml(cfg.type||'')}</div>
           <div id="ping-${cfg.id}" class="text-sm font-bold mt-1 ${cfg.ping?getPingColorClass(cfg.ping):'text-slate-400'}">${cfg.ping ? (cfg.ping==='timeout'?'تایم‌اوت':cfg.ping+'ms') : '--'}</div>
         `;
@@ -607,7 +640,7 @@
             const actions = document.createElement('div'); actions.className='ca';
             actions.innerHTML = `
           <button class="px-3 py-1 rounded bg-slate-700" data-act="copy">کپی</button>
-          <button class="px-3 py-1 rounded" data-act="pin">${cfg.pinned?'⭐':'☆'}</button>
+          <button class="px-3 py-1 roundفed" data-act="pin">${cfg.pinned?'⭐':'☆'}</button>
           <button class="px-3 py-1 rounded bg-yellow-500 text-black" data-act="ping">پینگ</button>
           <button class="px-3 py-1 rounded bg-emerald-600" data-act="share">اشتراک</button>
           <button class="px-3 py-1 rounded bg-blue-600" data-act="connect">${cfg.status==='connected'?'قطع':'اتصال'}</button>
@@ -1005,8 +1038,10 @@
         setupTabs();
 
         // Header quick nav
-        document.getElementById('goSettingsBtn').addEventListener('click', ()=> switchTab('settings'));
-        document.getElementById('goToolsBtn').addEventListener('click', ()=> switchTab('tools'));
+        const goSettingsBtn = document.getElementById('goSettingsBtn');
+        if (goSettingsBtn) goSettingsBtn.addEventListener('click', ()=> switchTab('settings'));
+        const goToolsBtn = document.getElementById('goToolsBtn');
+        if (goToolsBtn) goToolsBtn.addEventListener('click', ()=> switchTab('tools'));
 
         // Connect
         document.getElementById('connectBtn').addEventListener('click', quickConnect);
