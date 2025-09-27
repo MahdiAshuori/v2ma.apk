@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html dir="rtl" lang="fa">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>V2MA APP</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" defer></script>
-
+    <!-- توجه: کد تایمر از اینجا حذف شد -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script defer="" src="https://unpkg.com/html5-qrcode"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <!-- ====== Extracted & Renamed CSS (keeps original look) ====== -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -17,14 +17,12 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             min-height: 100vh;
         }
-
         /* glass-effect  -> .g */
         .g {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(148, 163, 184, 0.2);
         }
-
         /* config-card -> .cc */
         .cc {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -38,7 +36,6 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             border-color: rgba(59, 130, 246, 0.5);
         }
-
         /* status-indicator -> .si */
         .si {
             width: 12px;
@@ -51,20 +48,17 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
         }
-
         /* tab-active -> .ta */
         .ta {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             color: white;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-
         /* speed-meter -> .sm */
         .sm {
             background: conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e);
             box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
         }
-
         /* ping classes -> .p-ex, .p-good, .p-fair, .p-poor, .p-timeout, .p-testing */
         .p-ex { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
         .p-good { color: #eab308; text-shadow: 0 0 10px #eab308; }
@@ -73,17 +67,14 @@
         .p-timeout { color: #94a3b8; }
         .p-testing { animation: blink 1s infinite; color: #06b6d4 !important; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-
         /* neon-button -> .nb */
         .nb { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); transition: all 0.3s ease; }
         .nb:hover { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); transform: translateY(-2px); }
-
         /* header-gradient -> .hg */
         .hg {
             background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
             border-bottom: 1px solid rgba(148, 163, 184, 0.2);
         }
-
         /* menu-panel -> .mp, menu-item -> .mi */
         .mp {
             position: absolute;
@@ -106,23 +97,19 @@
             white-space: nowrap;
         }
         .mi:hover { background: rgba(148,163,184,.1); }
-
         /* Selection bar (keeps id #selectionBar) */
         #selectionBar { display: none; position: sticky; top: 0; z-index: 40; padding: 8px; margin-bottom: 12px; }
-
         /* card-actions -> .ca, card-menu-btn -> .cmb, top-actions -> .tacts, bulk-menu-btn -> .bmb */
         .ca { display: flex; gap: 8px; align-items: center; }
         .cmb { display: none; }
         .tacts { display: flex; }
         .bmb { display: none; }
-
         @media (max-width: 700px) {
             .ca { display: none !important; }
             .cmb { display: inline-flex !important; }
             .tacts { display: none !important; }
             .bmb { display: inline-flex !important; }
         }
-
         /* icon-btn -> .ib */
         .ib {
             background: rgba(148,163,184,.12);
@@ -133,7 +120,6 @@
             transition: .2s;
         }
         .ib:hover { background: rgba(148,163,184,.2); }
-
         /* titlebox -> .tbx, apktitle -> .apt */
         .tbx {
             justify-items: center;
@@ -153,12 +139,9 @@
             color: rgb(255, 255, 255);
             font-size: 30px;
             text-shadow: 0px 3px 5px rgb(0, 0, 0);
-
         }
-
         /* action menu small tweaks (matching original) */
         .menu-panel .mi + .mi { margin-top: 4px; }
-
         /* نام کانفیگ - محدودیت کاراکتر و کوتاه‌سازی */
         .config-name {
             display: block;
@@ -174,9 +157,30 @@
             justify-items: center;
             text-align: center;
         }
+        #titlelogo{
+            width: 65px;
+        }
+        .connectiontimer{
+            background: linear-gradient(120deg,rgba(19, 32, 60, 1) 50%, rgba(56, 78, 156, 1) 100%);
+            border: white 1px solid;
+            border-radius: 12px;
+            padding: 3px 10px 3px 10px;
+
+        }
+        /* About Modal & Panel */
+        #aboutModal {
+            display: none;
+        }
+        #aboutPanel {
+            display: none;
+        }
+        .abouttelegrm{
+            direction: ltr;
+        }
         @media (max-width: 700px) {
             .config-name { max-width: 25ch; }
         }
+        body { overflow-x: hidden; }
     </style>
 </head>
 <body class="min-h-screen text-white">
@@ -184,10 +188,8 @@
 <div class="hg p-6 shadow-2xl" id="header">
     <div class="flex items-center justify-center">
         <div class="flex items-center space-x-4 space-x-reverse">
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div id="titlelogo" class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <img src="v2malogo.png">
-
-                </img>
             </div>
             <div>
                 <div class="tbx">
@@ -210,6 +212,9 @@
         <div class="flex items-center justify-center gap-3 mb-4">
             <div class="si bg-slate-500" id="connectionStatus"></div>
             <span class="text-sm font-medium" id="statusText">آماده اتصال</span>
+            <div class="connectiontimer">
+                <span class="text-sm text-slate-400 hidden" id="connectionDuration">⏱ مدت اتصال: 00:00</span> <!-- <- المان تایمر اضافه شد -->
+            </div>
         </div>
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold text-slate-200">وضعیت اتصال</h2>
@@ -345,6 +350,54 @@
                     </div>
                 </div>
             </div>
+
+            <div class="p-4 g rounded-xl mt-6">
+                <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-3">
+                    <img alt="Telegram" class="w-8 h-8 rounded-full" src="telegramlogo.png">
+                    <img alt="App Logo" class="w-8 h-8 rounded-full" src="v2malogo.png">
+                    کانال تلگرام
+                </h3>
+                <p class="text-slate-300 mb-4 text-sm">
+                    تمامی اطلاعات و آموزش ها و اخبار و کانفیگ های جدید رو از کانال تلگرام دریافت کنید
+                </p>
+                <a class="nb bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 inline-block" href="https://t.me/+GUJjlbInWBxlMzIx" target="_blank">
+                    ورود به کانال
+                </a>
+            </div>
+            <!-- About Section Button -->
+            <div class="p-4 g rounded-xl mt-6">
+                <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-3">
+                    <img alt="About" class="w-8 h-8 rounded-full" src="aboutlogo.png"/> <!-- جایگزین با لوگو مناسب -->
+                    <span>درباره ما</span>
+                </h3>
+                <p class="text-slate-300 mb-4 text-sm">
+                    اطلاعات تماس و قوانین مربوط به برنامه
+                </p>
+                <button id="aboutBtn" class="nb bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 inline-block">
+                    مشاهده قوانین و مقررات
+                </button>
+            </div>
+
+            <!-- About Modal (for mobile) -->
+            <div id="aboutModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 backdrop-blur-sm">
+                <div class="g rounded-2xl p-6 m-4 w-full max-w-lg shadow-2xl flex flex-col h-[80vh]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-200">قوانین و مقررات</h3>
+                        <button id="closeAboutModalBtn" class="text-red-500 hover:text-red-400 text-2xl">✕</button>
+                    </div>
+                    <div id="aboutContentMobile" class="overflow-y-auto flex-grow text-slate-300 text-sm">
+                        <!-- قوانین اینجا قرار می‌گیرند -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Panel (for desktop) -->
+            <div id="aboutPanel" class="hidden g rounded-xl p-6 mt-4">
+                <h4 class="text-lg font-bold text-slate-200 mb-3">قوانین و مقررات</h4>
+                <div id="aboutContentDesktop" class="text-slate-300 text-sm">
+                    <!-- قوانین اینجا قرار می‌گیرند -->
+                </div>
+            </div>
         </div>
 
         <!-- Tools Tab -->
@@ -426,10 +479,8 @@
         <p class="text-xs text-slate-400 mt-3">برای عملکرد صحیح، نیاز به دسترسی دوربین و اجرای روی HTTPS است.</p>
     </div>
 </div>
-
 <!-- Toast container -->
-<div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
-
+<div class="fixed bottom-5 right-5 z-50 space-y-2" id="toastContainer"></div>
 <script>
     // ====== State & Storage Keys ======
     let configs = [];
@@ -458,6 +509,7 @@
         loadAll();
         renderAll();
         setupEventListeners();
+        setupAboutSection();
         updateConnectionStatus();
         startSpeedSimulation();
         showToast('روی موبایل، اکشن‌ها داخل منوی همبرگری هستند ✨', 'info');
@@ -1101,6 +1153,117 @@
         renderFolderBar();
         renderConfigs();
     }
+
+    // ====== Connection Duration Timer (اصلاح شده - باید در انتهای اسکریپت اصلی باشد) ======
+    // توجه: این بخش از ابتدای فایل حذف شده بود و الان در جای صحیح قرار می‌گیرد.
+    let connectionTimer = null;
+    let connectionStartTime = null;
+
+    function startConnectionTimer() {
+        connectionStartTime = Date.now();
+        const el = document.getElementById('connectionDuration');
+        if (!el) return;
+        el.classList.remove('hidden');
+        connectionTimer = setInterval(() => {
+            const diff = Math.floor((Date.now() - connectionStartTime) / 1000);
+            let h = Math.floor(diff / 3600);
+            let m = Math.floor((diff % 3600) / 60);
+            let s = diff % 60;
+            let text = '';
+            if (h > 0) {
+                text = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            } else if (m > 0) {
+                text = `${m}:${String(s).padStart(2,'0')}`;
+            } else {
+                text = `${s} ثانیه`;
+            }
+            el.textContent = "⏱ مدت اتصال: " + text;
+        }, 1000);
+    }
+
+    function stopConnectionTimer() {
+        if (connectionTimer) clearInterval(connectionTimer);
+        const el = document.getElementById('connectionDuration');
+        if (el) {
+            el.textContent = "⏱ مدت اتصال: 00:00";
+            el.classList.add('hidden');
+        }
+    }
+
+    // Modify updateConnectionStatus to start/stop timer
+    const oldUpdateConnectionStatus = updateConnectionStatus;
+    updateConnectionStatus = function() {
+        oldUpdateConnectionStatus();
+        if (isConnected && currentConfig) {
+            startConnectionTimer();
+        } else {
+            stopConnectionTimer();
+        }
+    };
+
+    // ====== About Section Setup (کدهای مورد نیاز برای بخش درباره ما) ======
+    function setupAboutSection() {
+        const aboutBtn = document.getElementById('aboutBtn');
+        const aboutModal = document.getElementById('aboutModal');
+        const closeAboutModalBtn = document.getElementById('closeAboutModalBtn');
+        const aboutPanel = document.getElementById('aboutPanel');
+        const aboutContentMobile = document.getElementById('aboutContentMobile');
+        const aboutContentDesktop = document.getElementById('aboutContentDesktop');
+
+        // متن قوانین و اطلاعات تماس
+        const aboutText = `
+            <p class="mb-2">با سلام به کاربران عزیز</p>
+            <p class="mb-2">هرگونه کپی برداری از این برنامه و ظاهر کاربری غیر قانونی و حرام است</p>
+            <p class="mb-2">چرا که برای ساخت این برناامه تلاش های مستمر و ارزشمندی صرف شده</p>
+            <p class="mb-2">سازنده این برنامه به فکر ساخت فیلترشکن یا بهره برداری مالی از تحریم های اینترنتی نبوده</p>
+            <p class="mb-2">این برنامه به عنوان ابزار استفاده از سرور ها و کانفیگ های وی تو ری هستش و به صورت خودکار به سروری در داخل یا خارج کشور ایران متصل نمیباشد</p>
+            <p class="mb-2">به تبعیت از قوانین جمهوری اسلامی ایران فروش این برنامه برای استفاده هر کاربر و هر انسانی در سرتاسر دنیا جرم وحرام میباشد</p>
+            <p class="mb-2">سازنده این برنامه  از اهدافی مانند دشمنی با وزارت ارتباطات جمهوری اسلامی ایران نداشته و هیچگونه پیروی از توتعه های دشمنان سرزمین تاریخی و فرهنگی ایران ندارد و نخواهد داشت.</p>
+            <p class="mb-2">درود بر تمام مردم وطن دوست و وطن پرست ایران و جهان.</p>
+            <p class="mb-2">در همین لحظه فقط ارتباط با ما در فضای مجازی تنها در اپلیکیشن تلگرام و ایمل موجود میباشد</p>
+            <p class="mt-4">------------</p>
+            <p class="mt-4">ایمیل: <a href="mailto:mahdiashuori1@gmail.com" class="text-blue-400 hover:underline"><br>mahdiashuori1@gmail.com</a></p>
+            <p style="direction: ltr; text-align: right">تلگرام: <a href="https://t.me/mahdi_ashuori" target="_blank" class="text-blue-400 hover:underline"><br>@mahdi_ashuori</a></p>
+        `;
+
+        // تابعی که نحوه نمایش را بر اساس اندازه صفحه و کلیک کاربر تعیین می‌کند
+        function handleAboutClick() {
+            if (window.innerWidth < 4000) {
+                // موبایل: نمایش مودال
+                aboutContentMobile.innerHTML = aboutText;
+                toggleModal('aboutModal', true); // از تابع موجود toggleModal استفاده می‌شود
+            } else {
+                // دسکتاپ: باز/بسته کردن پنل کشویی
+                const isCurrentlyVisible = !aboutPanel.classList.contains('hidden');
+                if (isCurrentlyVisible) {
+                    aboutPanel.classList.add('hidden');
+                } else {
+                    aboutContentDesktop.innerHTML = aboutText;
+                    aboutPanel.classList.remove('hidden');
+                }
+            }
+        }
+
+        // افزودن event listener به دکمه
+        aboutBtn.addEventListener('click', handleAboutClick);
+
+        // افزودن event listener به دکمه بستن مودال
+        closeAboutModalBtn.addEventListener('click', () => toggleModal('aboutModal', false));
+
+        // اختیاری: بستن مودال با کلیک روی پس‌زمینه
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) {
+                toggleModal('aboutModal', false);
+            }
+        });
+    }
+
+    // فراخوانی تابع setupAboutSection در داخل تابع init
+    // توجه: این خط باید در جایی از تابع init قرار گیرد، مثلاً بعد از setupEventListeners();
+    // شما باید این خط را به تابع init اضافه کنید:
+    // setupAboutSection();
+
+
 </script>
 </body>
 </html>
