@@ -160,6 +160,9 @@
         #titlelogo{
             width: 65px;
         }
+        #connectionDuration{
+            margin: 2px 5px 2px 20px;
+        }
         .connectiontimer{
             background: linear-gradient(120deg,rgba(19, 32, 60, 1) 50%, rgba(56, 78, 156, 1) 100%);
             border: white 1px solid;
@@ -174,9 +177,54 @@
         #aboutPanel {
             display: none;
         }
-        .abouttelegrm{
-            direction: ltr;
+
+        /*splashscreen*/
+        #splashScreen{
+            position:fixed;
+            inset:0;
+            background:#0b1020;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
         }
+        /* ---------- لودینگ دایره ای نازک سفید ---------- */
+        .loader-circle{
+            width:48px;
+            height:48px;
+            margin-top:2rem;
+            border:3px solid rgba(255,255,255,.2);
+            border-top-color:#fff;
+            border-radius:50%;
+            animation:spin 2s linear infinite;
+        }
+        .loadinglogo{
+            width:220px;
+            height:220px;
+            object-fit:contain;
+        }
+        #splashText{
+            margin-top:1rem;
+            color:#fff;
+            font-size:1.1rem;
+            text-align:center;
+        }
+        /*انیمیشن لودینگ دایره ای*/
+        @keyframes spin{
+            to{transform:rotate(360deg)}
+        }
+        /*پایان قسمت لودینگ ورود*/
+
+        /* ---------- استایل کارت تست سرعت اینترنت ---------- */
+        .bg-card{background: #001023;border:1px solid rgba(148, 163, 184, 0.4);border-radius:1rem;padding:1.5rem}
+        .title-card{font-size:1.125rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+        .desc-card{font-size:.875rem;color:#94a3b8;margin-bottom:1rem}
+        .btn-action{background:#3b82f6;color:#fff;padding:.5rem 1.25rem;border-radius:.5rem;font-weight:600;transition:.3s}
+        .btn-action:hover{background:#2563eb}
+        .res-row{color:#e2e8f0;font-size:.95rem;margin:.25rem 0}
+
+
         @media (max-width: 700px) {
             .config-name { max-width: 25ch; }
         }
@@ -184,6 +232,14 @@
     </style>
 </head>
 <body class="min-h-screen text-white">
+<!-- صفحه اسپلش 2 ثانیه ای -->
+<div id="splashScreen" >
+    <img class="loadinglogo" src="applogo.png" alt="لوگو">
+    <p id="splashText">
+        توسعه یافته توسط مهدی آشوری<br>developed by Mahdi ASHUORI
+    </p>
+    <div class="loader-circle"></div>
+</div>
 <!-- Header -->
 <div class="hg p-6 shadow-2xl" id="header">
     <div class="flex items-center justify-center">
@@ -441,6 +497,17 @@
                         <input type="file" id="backupInput" accept="application/json" class="hidden" />
                     </div>
                 </div>
+                <!-- کارت تست سرعت اینترنت -->
+                <div class="bg-card p-6 rounded-xl shadow">
+                    <h4 class="title-card">تست سرعت اینترنت شما</h4>
+                    <p class="desc-card">اندازه‌گیری دانلود، آپلود و پینگ به نزدیک‌ترین سرور بدون نیاز به کانکت شدن.</p>
+                    <button id="netSpeedTestBtn" class="btn-action">شروع تست سرعت</button>
+                    <div id="netSpeedResult" class="mt-4 hidden">
+                        <div class="res-row">دانلود: <span id="downMbps">--</span> Mbps</div>
+                        <div class="res-row">آپلود: <span id="upMbps">--</span> Mbps</div>
+                        <div class="res-row">پینگ: <span id="pingMs">--</span> ms</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -482,6 +549,16 @@
 <!-- Toast container -->
 <div class="fixed bottom-5 right-5 z-50 space-y-2" id="toastContainer"></div>
 <script>
+    /* ------------ حذف اسپلش بعد از 2 ثانیه ------------ */
+    document.addEventListener('DOMContentLoaded',()=>{
+        const splash=document.getElementById('splashScreen');
+        if(!splash) return;
+        setTimeout(()=>{
+            splash.style.opacity='0';
+            splash.style.transition='opacity .4s ease';
+            setTimeout(()=>splash.remove(),400);
+        },2000);
+    });
     // ====== State & Storage Keys ======
     let configs = [];
     let folders = [];
@@ -1214,7 +1291,7 @@
         const aboutText = `
             <p class="mb-2">با سلام به کاربران عزیز</p>
             <p class="mb-2">هرگونه کپی برداری از این برنامه و ظاهر کاربری غیر قانونی و حرام است</p>
-            <p class="mb-2">چرا که برای ساخت این برناامه تلاش های مستمر و ارزشمندی صرف شده</p>
+            <p class="mb-2">چرا که برای ساخت این برنامه تلاش های مستمر و ارزشمندی صرف شده</p>
             <p class="mb-2">سازنده این برنامه به فکر ساخت فیلترشکن یا بهره برداری مالی از تحریم های اینترنتی نبوده</p>
             <p class="mb-2">این برنامه به عنوان ابزار استفاده از سرور ها و کانفیگ های وی تو ری هستش و به صورت خودکار به سروری در داخل یا خارج کشور ایران متصل نمیباشد</p>
             <p class="mb-2">به تبعیت از قوانین جمهوری اسلامی ایران فروش این برنامه برای استفاده هر کاربر و هر انسانی در سرتاسر دنیا جرم وحرام میباشد</p>
@@ -1262,6 +1339,60 @@
     // توجه: این خط باید در جایی از تابع init قرار گیرد، مثلاً بعد از setupEventListeners();
     // شما باید این خط را به تابع init اضافه کنید:
     // setupAboutSection();
+
+    /* ------------ تست سرعت اینترنت واقعی (بدون اتصال) ------------ */
+    (()=>{
+        const startBtn=document.getElementById('netSpeedTestBtn');
+        const resultBox=document.getElementById('netSpeedResult');
+        const downEl=document.getElementById('downMbps');
+        const upEl=document.getElementById('upMbps');
+        const pingEl=document.getElementById('pingMs');
+        if(!startBtn) return;
+
+        startBtn.addEventListener('click',async()=>{
+            startBtn.disabled=true;
+            startBtn.textContent='در حال تست...';
+            resultBox.classList.add('hidden');
+
+            try{
+                // تابع تست با استفاده از Image-clock + XMLHttpRequest
+                const testUrl='https://cachefly.cachefly.net/10mb.test'; // فایل 10 مگابایت
+                const pingUrl='https://cachefly.cachefly.net/1kb.test';  // فایل کوچک برای پینگ
+
+                // پینگ ساده
+                const t0=performance.now();
+                await fetch(pingUrl,{mode:'no-cors'});
+                const ping=Math.round(performance.now()-t0);
+
+                // دانلود
+                const tDown=performance.now();
+                await fetch(testUrl,{mode:'no-cors'});
+                const downDur=(performance.now()-tDown)/1000; // ثانیه
+                const downMbps=Math.round(10*8/downDur);
+
+                // آپلود (با ارسال blob 2 مگابایتی)
+                const uploadBlob=new Blob([new Uint8Array(2*1024*1024)]);
+                const tUp=performance.now();
+                await fetch('https://cachefly.cachefly.net/empty.test',{
+                    method:'POST',body:uploadBlob,mode:'no-cors'
+                });
+                const upDur=(performance.now()-tUp)/1000;
+                const upMbps=Math.round(2*8/upDur);
+
+                // نمایش
+                downEl.textContent=downMbps;
+                upEl.textContent=upMbps;
+                pingEl.textContent=ping;
+                resultBox.classList.remove('hidden');
+            }catch(e){
+                downEl.textContent='خطا';upEl.textContent='--';pingEl.textContent='--';
+                resultBox.classList.remove('hidden');
+            }finally{
+                startBtn.disabled=false;
+                startBtn.textContent='شروع تست سرعت';
+            }
+        });
+    })();
 
 
 </script>
